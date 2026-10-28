@@ -1,0 +1,2137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MediQueue | Hospital Dashboard</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   MIDNIGHT OCEAN + LIQUID GLASS  —  Hospital Dashboard
+   - Sidebar on desktop, horizontal nav pill on mobile
+   - Smooth anchor scrolling + scroll-spy active nav
+   ============================================================ */
+
+:root {
+    --bg: #060b14;
+    --bg-2: #0a1220;
+    --sidebar: rgba(10, 18, 32, 0.72);
+    --card: rgba(255, 255, 255, 0.045);
+    --card-hover: rgba(255, 255, 255, 0.075);
+    --border: rgba(255, 255, 255, 0.12);
+    --border-soft: rgba(255, 255, 255, 0.07);
+    --primary: #22d3ee;
+    --primary-light: #5eead4;
+    --accent: #3b82f6;
+    --text: #e6f1ff;
+    --muted: #7d92b0;
+    --green: #4ade80;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --radius: 20px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* ---- Deep ocean animated background ---- */
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+body::before {
+    width: 560px;
+    height: 560px;
+    background: radial-gradient(circle, #0e7490, #082f49 70%);
+    opacity: .45;
+    top: -200px;
+    left: -180px;
+    animation: driftA 28s ease-in-out infinite alternate;
+}
+
+body::after {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, #1e40af, #0f1e4a 70%);
+    opacity: .4;
+    bottom: -180px;
+    right: -140px;
+    animation: driftB 32s ease-in-out infinite alternate;
+}
+
+@keyframes driftA {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(110px, 80px) scale(1.15); }
+}
+@keyframes driftB {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(-100px, -90px) scale(1.2); }
+}
+
+button, input { font: inherit; }
+button { cursor: pointer; }
+
+.app {
+    display: flex;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+}
+
+/* ================= SIDEBAR (desktop only) ================= */
+.sidebar {
+    width: 250px;
+    padding: 28px 18px;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 10;
+
+    background: linear-gradient(
+        160deg,
+        rgba(255, 255, 255, 0.07),
+        rgba(255, 255, 255, 0.02) 40%,
+        rgba(8, 16, 30, 0.65)
+    );
+    border-right: 1px solid var(--border);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    box-shadow:
+        0 0 60px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.sidebar::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 12%;
+    right: 12%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(94, 234, 212, 0.6),
+        transparent
+    );
+    border-radius: 50%;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 12px;
+    margin-bottom: 45px;
+}
+
+.logo-icon {
+    width: 43px;
+    height: 43px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, #5eead4, #22d3ee 60%, #3b82f6);
+    border-radius: 13px;
+    font-size: 22px;
+    color: #031118;
+    font-weight: 700;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    box-shadow:
+        0 8px 24px rgba(34, 211, 238, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        inset 0 -2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.logo-text {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 21px;
+    font-weight: 700;
+    color: #d6f5ff;
+    text-shadow: 0 0 26px rgba(94, 234, 212, 0.4);
+}
+
+.logo-text span {
+    background: linear-gradient(120deg, #5eead4, #22d3ee);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.nav-label {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 0 12px;
+    margin-bottom: 14px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 13px 15px;
+    margin-bottom: 6px;
+    color: var(--muted);
+    text-decoration: none;
+    border-radius: 13px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    border: 1px solid transparent;
+}
+
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.nav-item.active {
+    background: linear-gradient(
+        135deg,
+        rgba(94, 234, 212, 0.18),
+        rgba(34, 211, 238, 0.1)
+    );
+    color: #a8f0e4;
+    border: 1px solid rgba(94, 234, 212, 0.35);
+    box-shadow:
+        0 4px 18px rgba(34, 211, 238, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.nav-icon {
+    width: 22px;
+    text-align: center;
+    font-size: 17px;
+}
+
+.sidebar-bottom { margin-top: auto; }
+
+.profile-card {
+    background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.08),
+        rgba(255, 255, 255, 0.02)
+    );
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 14px;
+    margin-bottom: 15px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.profile-row {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.avatar {
+    width: 39px;
+    height: 39px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(
+        145deg,
+        rgba(94, 234, 212, 0.28),
+        rgba(59, 130, 246, 0.16)
+    );
+    color: #7ff5e0;
+    border-radius: 12px;
+    font-weight: 700;
+    border: 1px solid rgba(94, 234, 212, 0.32);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.profile-name { font-size: 13px; font-weight: 700; color: #f0f8ff; }
+.profile-role { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+.logout-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 12px;
+    border-radius: 13px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.logout-btn:hover {
+    background: rgba(248, 113, 113, 0.1);
+    border-color: rgba(248, 113, 113, 0.35);
+    color: var(--red);
+}
+
+/* ================= MOBILE TOP BAR (hidden on desktop) ================= */
+.mobile-topbar {
+    display: none;
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    padding: 14px 16px;
+    background: linear-gradient(
+        160deg,
+        rgba(14, 24, 40, 0.92),
+        rgba(8, 16, 30, 0.92)
+    );
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.mobile-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #d6f5ff;
+}
+
+.mobile-logo .logo-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 17px;
+    border-radius: 10px;
+}
+
+.mobile-logout {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 14px;
+    border-radius: 11px;
+    background: rgba(248, 113, 113, 0.12);
+    color: #fca5a5;
+    border: 1px solid rgba(248, 113, 113, 0.35);
+    font-size: 12px;
+    font-weight: 700;
+    transition: background 0.2s;
+}
+
+.mobile-logout:hover {
+    background: rgba(248, 113, 113, 0.22);
+}
+
+/* ---- Mobile horizontal nav tabs ---- */
+.mobile-nav {
+    display: none;
+    position: sticky;
+    top: 63px;
+    z-index: 55;
+    padding: 10px 12px;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    background: rgba(6, 11, 20, 0.85);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.mobile-nav::-webkit-scrollbar { display: none; }
+
+.mobile-nav a {
+    flex-shrink: 0;
+    padding: 9px 16px;
+    border-radius: 20px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--muted);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.04);
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.mobile-nav a.active {
+    background: linear-gradient(135deg, #5eead4, #22d3ee 60%, #60a5fa);
+    color: #031118;
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 16px rgba(34, 211, 238, 0.35);
+}
+
+/* ================= MAIN ================= */
+.main {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    padding: 32px 38px;
+    position: relative;
+    z-index: 1;
+}
+
+#appointments {
+    scroll-margin-top: 100px;
+}
+
+#patients {
+    scroll-margin-top: 100px;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.page-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 27px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #f2faff;
+    text-shadow: 0 2px 30px rgba(94, 234, 212, 0.1);
+}
+
+.page-subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 7px;
+}
+
+.top-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.date-pill {
+    padding: 11px 15px;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--muted);
+    font-size: 12px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* ---- Welcome banner ---- */
+.welcome {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(
+        115deg,
+        rgba(14, 116, 144, 0.28),
+        rgba(30, 64, 175, 0.28) 55%,
+        rgba(34, 211, 238, 0.18)
+    );
+    border: 1px solid rgba(94, 234, 212, 0.25);
+    border-radius: 24px;
+    padding: 32px;
+    margin-bottom: 28px;
+    backdrop-filter: blur(24px) saturate(170%);
+    -webkit-backdrop-filter: blur(24px) saturate(170%);
+    box-shadow:
+        0 20px 50px -12px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -2px 12px rgba(0, 0, 0, 0.3);
+}
+
+.welcome::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 8%;
+    right: 8%;
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(94, 234, 212, 0.85),
+        rgba(255, 255, 255, 0.9),
+        transparent
+    );
+    border-radius: 50%;
+    filter: blur(0.5px);
+}
+
+.welcome::after {
+    content: "✚";
+    position: absolute;
+    right: 55px;
+    top: 10px;
+    font-size: 140px;
+    font-weight: 700;
+    color: rgba(94, 234, 212, 0.06);
+    transform: rotate(-15deg);
+}
+
+.welcome h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 25px;
+    margin-bottom: 10px;
+    color: #f2faff;
+}
+
+.welcome p {
+    color: #b9d8f8;
+    font-size: 13px;
+    line-height: 1.7;
+    max-width: 500px;
+}
+
+.welcome-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(94, 234, 212, 0.3);
+    padding: 7px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    margin-bottom: 18px;
+    color: #a8f0e4;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* ---- Section heading ---- */
+.section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 17px;
+}
+
+.section-heading h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 17px;
+    color: #f0f8ff;
+}
+
+.section-heading span {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+/* ---- Stats ---- */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.075),
+        rgba(255, 255, 255, 0.02) 45%,
+        rgba(8, 16, 30, 0.55)
+    );
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 21px;
+    transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+    backdrop-filter: blur(24px) saturate(170%);
+    -webkit-backdrop-filter: blur(24px) saturate(170%);
+    box-shadow:
+        0 12px 30px -8px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.16),
+        inset 0 -2px 10px rgba(0, 0, 0, 0.25);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 15%;
+    right: 15%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(94, 234, 212, 0.6),
+        transparent
+    );
+    border-radius: 50%;
+}
+
+.stat-card:hover {
+    background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.1),
+        rgba(255, 255, 255, 0.03) 45%,
+        rgba(8, 16, 30, 0.6)
+    );
+    transform: translateY(-3px);
+    box-shadow:
+        0 18px 40px -10px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(94, 234, 212, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        inset 0 -2px 10px rgba(0, 0, 0, 0.25);
+}
+
+.stat-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.stat-icon {
+    width: 43px;
+    height: 43px;
+    display: grid;
+    place-items: center;
+    border-radius: 13px;
+    font-size: 19px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.blue   { color: #60a5fa; background: rgba(59, 130, 246, 0.16); }
+.green  { color: #4ade80; background: rgba(34, 197, 94, 0.14); }
+.yellow { color: #fbbf24; background: rgba(251, 191, 36, 0.14); }
+.purple { color: #c084fc; background: rgba(168, 85, 247, 0.14); }
+
+.stat-label {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.stat-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 30px;
+    font-weight: 700;
+    margin-top: 7px;
+    background: linear-gradient(120deg, #5eead4, #60a5fa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+/* ---- Appointments glass card ---- */
+.appointments-card {
+    background: linear-gradient(
+        160deg,
+        rgba(255, 255, 255, 0.065),
+        rgba(255, 255, 255, 0.02) 45%,
+        rgba(8, 16, 30, 0.55)
+    );
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    backdrop-filter: blur(28px) saturate(170%);
+    -webkit-backdrop-filter: blur(28px) saturate(170%);
+    box-shadow:
+        0 20px 50px -14px rgba(0, 0, 0, 0.65),
+        inset 0 1px 0 rgba(255, 255, 255, 0.16),
+        inset 0 -2px 12px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.appointments-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 6%;
+    right: 6%;
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(94, 234, 212, 0.75),
+        rgba(255, 255, 255, 0.9),
+        transparent
+    );
+    border-radius: 50%;
+    filter: blur(0.5px);
+}
+
+.appointments-header {
+    padding: 23px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    border-bottom: 1px solid var(--border-soft);
+    flex-wrap: wrap;
+}
+
+.appointments-header h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 17px;
+    color: #f0f8ff;
+}
+
+.appointments-header p {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.search-box {
+    width: 260px;
+    max-width: 100%;
+    position: relative;
+}
+
+.search-box input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px 12px 39px;
+    color: var(--text);
+    outline: none;
+    font-size: 12px;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.search-box input:focus {
+    border-color: rgba(94, 234, 212, 0.7);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow:
+        0 0 0 3px rgba(94, 234, 212, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.search-box input::placeholder { color: #5d718a; }
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    top: 11px;
+    color: var(--muted);
+    font-size: 15px;
+}
+
+/* ---- Table ---- */
+.table-wrapper { overflow-x: auto; }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    white-space: nowrap;
+}
+
+thead {
+    background: rgba(10, 18, 32, 0.5);
+}
+
+th {
+    padding: 15px 20px;
+    color: #8298b4;
+    font-size: 10px;
+    font-weight: 700;
+    text-align: left;
+    letter-spacing: 0.8px;
+}
+
+td {
+    padding: 17px 20px;
+    border-top: 1px solid var(--border-soft);
+    color: #cbd9ec;
+    font-size: 12px;
+}
+
+tbody tr { transition: background 0.2s; }
+tbody tr:hover { background: rgba(94, 234, 212, 0.05); }
+
+.patient-cell {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.patient-avatar {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border-radius: 11px;
+    background: linear-gradient(
+        145deg,
+        rgba(94, 234, 212, 0.22),
+        rgba(59, 130, 246, 0.14)
+    );
+    color: #93e8db;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1px solid rgba(94, 234, 212, 0.25);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.patient-name {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.patient-email {
+    color: var(--muted);
+    font-size: 10px;
+    margin-top: 4px;
+}
+
+/* ---- Status pills ---- */
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    border: 1px solid transparent;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.status::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 8px currentColor;
+}
+
+.status.confirmed {
+    color: #4ade80;
+    background: rgba(34, 197, 94, 0.12);
+    border-color: rgba(34, 197, 94, 0.28);
+}
+
+.status.waiting,
+.status.pending {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.12);
+    border-color: rgba(251, 191, 36, 0.28);
+}
+
+.status.cancelled {
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.12);
+    border-color: rgba(248, 113, 113, 0.28);
+}
+
+.status.completed {
+    color: #60a5fa;
+    background: rgba(59, 130, 246, 0.14);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.status.now_serving {
+    color: #22d3ee;
+    background: rgba(34, 211, 238, 0.14);
+    border-color: rgba(34, 211, 238, 0.32);
+    box-shadow: 0 0 18px rgba(34, 211, 238, 0.2);
+}
+
+/* ---- Empty / loading / error ---- */
+.empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--muted);
+}
+
+.empty-icon { font-size: 32px; margin-bottom: 13px; }
+.empty-state h4 { color: var(--text); font-size: 14px; margin-bottom: 7px; }
+.empty-state p { font-size: 12px; }
+
+.loading {
+    padding: 40px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.error-retry {
+    margin-top: 14px;
+    padding: 9px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.error-retry:hover { background: rgba(255, 255, 255, 0.1); }
+
+.footer {
+    padding: 23px 0 5px;
+    color: #596b84;
+    font-size: 11px;
+    text-align: center;
+}
+
+/* ---- Date picker ---- */
+.date-picker {
+    padding: 10px 13px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    color-scheme: dark;
+    outline: none;
+    max-width: 100%;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.date-picker:focus {
+    border-color: rgba(94, 234, 212, 0.7);
+    box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.12);
+}
+
+.today-btn {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--primary-light);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+.today-btn:hover {
+    background: rgba(94, 234, 212, 0.1);
+    border-color: rgba(94, 234, 212, 0.35);
+}
+
+/* ---- Complete button ---- */
+.complete-btn {
+    background: rgba(34, 197, 94, 0.13);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.38);
+    padding: 7px 12px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    transition: background 0.15s, box-shadow 0.15s;
+}
+
+.complete-btn:hover {
+    background: rgba(34, 197, 94, 0.24);
+    box-shadow: 0 0 16px rgba(34, 197, 94, 0.25);
+}
+
+.complete-btn:disabled {
+    opacity: .5;
+    cursor: wait;
+}
+
+.action-done {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+/* ---- Pending hint ---- */
+.pending-hint {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+    padding: 13px 18px;
+    border-radius: 15px;
+    border: 1px solid rgba(251, 191, 36, 0.32);
+    background: rgba(251, 191, 36, 0.08);
+    color: var(--yellow);
+    font-size: 12px;
+    font-weight: 600;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.pending-hint button {
+    padding: 7px 13px;
+    border-radius: 10px;
+    border: 1px solid rgba(251, 191, 36, 0.4);
+    background: transparent;
+    color: var(--yellow);
+    font-size: 11px;
+    font-weight: 700;
+    transition: background 0.2s;
+}
+
+.pending-hint button:hover { background: rgba(251, 191, 36, 0.15); }
+
+.token-cell {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    color: var(--primary-light);
+    white-space: nowrap;
+    text-shadow: 0 0 18px rgba(94, 234, 212, 0.35);
+}
+
+/* ================= MODAL ================= */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(3, 7, 15, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+}
+
+.modal-card {
+    background: linear-gradient(
+        145deg,
+        rgba(18, 28, 46, 0.92),
+        rgba(10, 18, 32, 0.95)
+    );
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 26px;
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    box-shadow:
+        0 34px 80px -14px rgba(0, 0, 0, 0.8),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -2px 14px rgba(0, 0, 0, 0.4);
+    position: relative;
+}
+
+.modal-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(94, 234, 212, 0.85),
+        rgba(255, 255, 255, 0.9),
+        transparent
+    );
+    border-radius: 50%;
+    filter: blur(0.5px);
+}
+
+.modal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-head h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    color: #f2faff;
+}
+
+.modal-close {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-size: 18px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.modal-close:hover { color: var(--red); }
+
+.doctor-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-row label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.form-row input {
+    padding: 11px 13px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
+    outline: none;
+    font-size: 13px;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.form-row input:focus {
+    border-color: rgba(94, 234, 212, 0.7);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow:
+        0 0 0 3px rgba(94, 234, 212, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.form-row input::placeholder { color: #5d718a; }
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn-cancel, .btn-save {
+    padding: 10px 18px;
+    border-radius: 11px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+}
+
+.btn-cancel {
+    background: transparent;
+    color: var(--muted);
+    transition: background 0.2s;
+}
+
+.btn-cancel:hover { background: rgba(255, 255, 255, 0.05); }
+
+.btn-save {
+    background: linear-gradient(135deg, #5eead4, #22d3ee 60%, #3b82f6);
+    color: #031118;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    box-shadow:
+        0 6px 22px rgba(34, 211, 238, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6),
+        inset 0 -2px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-save:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        0 10px 30px rgba(34, 211, 238, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.75),
+        inset 0 -2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-save:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1100px) {
+    .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .main { padding: 28px; }
+}
+
+/* ---- MOBILE: hide sidebar, show topbar + horizontal nav ---- */
+@media (max-width: 760px) {
+    .sidebar {
+        display: none;
+    }
+
+    .mobile-topbar {
+        display: flex;
+    }
+
+    .mobile-nav {
+        display: flex;
+    }
+
+    .main {
+        margin-left: 0;
+        width: 100%;
+        padding: 20px 16px 40px;
+    }
+
+    #appointments,
+    #patients {
+        scroll-margin-top: 130px;
+    }
+
+    .topbar { align-items: flex-start; }
+    .page-title { font-size: 22px; }
+    .date-pill { display: none; }
+    .welcome { padding: 25px 22px; }
+    .welcome h2 { font-size: 21px; }
+    .stats { gap: 12px; }
+    .stat-card { padding: 15px; }
+    .stat-value { font-size: 25px; }
+    .appointments-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .search-box { width: 100%; }
+    .top-right { flex-wrap: wrap; justify-content: flex-end; }
+}
+
+@media (max-width: 420px) {
+    .stats { grid-template-columns: 1fr 1fr; }
+    .stat-icon { width: 36px; height: 36px; }
+    .stat-value { font-size: 23px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+    html { scroll-behavior: auto; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+    <!-- SIDEBAR (desktop only) -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">✚</div>
+            <div class="logo-text">Medi<span>Queue</span></div>
+        </div>
+
+        <div class="nav-label">WORKSPACE</div>
+        <a href="#top" class="nav-item active" id="navDashboard">
+            <span class="nav-icon">▦</span><span class="nav-text">Dashboard</span>
+        </a>
+        <a href="#appointments" class="nav-item" id="navAppointments">
+            <span class="nav-icon">▤</span><span class="nav-text">Appointments</span>
+        </a>
+        <a href="#patients" class="nav-item" id="navPatients">
+            <span class="nav-icon">♙</span><span class="nav-text">Patients</span>
+        </a>
+        <a href="#" class="nav-item" id="addDoctorNav">
+            <span class="nav-icon">⚕</span><span class="nav-text">Add Doctor</span>
+        </a>
+
+        <div class="sidebar-bottom">
+            <div class="profile-card">
+                <div class="profile-row">
+                    <div class="avatar" id="avatar">H</div>
+                    <div class="profile-info">
+                        <div class="profile-name" id="hospitalName">Hospital</div>
+                        <div class="profile-role">Hospital Administrator</div>
+                    </div>
+                </div>
+            </div>
+            <button class="logout-btn" id="logoutBtn"><span>↪</span><span class="logout-text">Logout</span></button>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main" id="top">
+
+        <!-- MOBILE TOPBAR (hidden on desktop) -->
+        <div class="mobile-topbar">
+            <div class="mobile-logo">
+                <div class="logo-icon">✚</div>
+                MediQueue
+            </div>
+            <button class="mobile-logout" id="logoutBtnMobile">↪ Logout</button>
+        </div>
+
+        <!-- MOBILE HORIZONTAL NAV -->
+        <nav class="mobile-nav">
+            <a href="#top" class="active" id="mnavDashboard"><span>▦</span> Dashboard</a>
+            <a href="#appointments" id="mnavAppointments"><span>▤</span> Appointments</a>
+            <a href="#patients" id="mnavPatients"><span>♙</span> Patients</a>
+            <a href="#" id="mnavAddDoctor"><span>⚕</span> Add Doctor</a>
+        </nav>
+
+        <header class="topbar">
+            <div>
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-subtitle">Manage your hospital operations and appointments.</p>
+            </div>
+
+            <div class="top-right">
+                <div class="date-pill" id="currentDate">Today</div>
+                <input type="date" id="datePicker" class="date-picker" aria-label="Select appointment date">
+                <button type="button" class="today-btn" id="todayBtn">Today</button>
+                <button type="button" class="today-btn" id="allDatesBtn">All Dates</button>
+            </div>
+        </header>
+
+        <section class="welcome">
+            <div class="welcome-tag"><span>●</span> Hospital Workspace</div>
+            <h2>Welcome back, <span id="welcomeName">Hospital</span> 👋</h2>
+            <p>Here's what's happening at your hospital today. Manage appointments, monitor patients, and keep everything running smoothly.</p>
+        </section>
+
+        <div class="section-heading" id="patients">
+            <h3>Overview</h3>
+            <span id="overviewLabel">Today's activity</span>
+        </div>
+
+        <section class="stats">
+            <div class="stat-card">
+                <div class="stat-top"><div class="stat-icon blue">▤</div></div>
+                <div class="stat-label">Total Appointments</div>
+                <div class="stat-value" id="totalAppointments">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top"><div class="stat-icon green">✓</div></div>
+                <div class="stat-label">Waiting</div>
+                <div class="stat-value" id="waitingAppointments">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top"><div class="stat-icon yellow">◷</div></div>
+                <div class="stat-label">Completed</div>
+                <div class="stat-value" id="completedAppointments">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top"><div class="stat-icon purple">♙</div></div>
+                <div class="stat-label">Total Patients</div>
+                <div class="stat-value" id="totalPatients">0</div>
+            </div>
+        </section>
+
+        <section id="appointments">
+            <div class="pending-hint" id="pendingHint" style="display:none;"></div>
+            <div class="appointments-card">
+                <div class="appointments-header">
+                    <div>
+                        <h3 id="appointmentsTitle">Appointments</h3>
+                        <p id="appointmentsSubtitle">View and manage patient appointments</p>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <button type="button" class="today-btn" id="callNextBtn" title="Call the next waiting patient">Call Next Patient</button>
+                        <div class="search-box">
+                            <span class="search-icon">⌕</span>
+                            <input type="text" id="searchInput" placeholder="Search patient, email, doctor or token...">
+                        </div>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>TOKEN</th>
+                                <th>PATIENT</th>
+                                <th>DOCTOR</th>
+                                <th>DATE</th>
+                                <th>STATUS</th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentsBody">
+                            <tr><td colspan="6"><div class="loading">Loading appointments...</div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">© 2026 MediQueue · Hospital Management System</footer>
+    </main>
+</div>
+
+<!-- ADD DOCTOR MODAL -->
+<div id="doctorModal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+        <div class="modal-head">
+            <h3>Add New Doctor</h3>
+            <button type="button" class="modal-close" id="closeDoctorModal">✕</button>
+        </div>
+        <form id="doctorForm" class="doctor-form">
+            <div class="form-row"><label>Doctor Name *</label><input type="text" id="docName" placeholder="Dr. Ravi Kumar" required></div>
+            <div class="form-row"><label>Specialization *</label><input type="text" id="docSpec" placeholder="Cardiologist" required></div>
+            <div class="form-row"><label>Email</label><input type="email" id="docEmail" placeholder="doctor@hospital.com"></div>
+            <div class="form-row"><label>Phone</label><input type="text" id="docPhone" placeholder="9876543210"></div>
+            <div class="form-row"><label>Qualification</label><input type="text" id="docQual" placeholder="MBBS, MD"></div>
+            <div class="form-row"><label>Experience (years)</label><input type="number" id="docExp" min="0" placeholder="5"></div>
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" id="cancelDoctor">Cancel</button>
+                <button type="submit" class="btn-save" id="saveDoctorBtn">Save Doctor</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+import {
+    getFirestore, collection, getDocs, doc, getDoc, query, where,
+    onSnapshot, addDoc, updateDoc, setDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCc9N5SFCQdkm-WvLBBDtY5TadztcT1I6E",
+    authDomain: "mediqueue-88ee8.firebaseapp.com",
+    projectId: "mediqueue-88ee8",
+    storageBucket: "mediqueue-88ee8.firebasestorage.app",
+    messagingSenderId: "673881042044",
+    appId: "1:673881042044:web:012f9cc55e2472399a6df9",
+    measurementId: "G-30HED1L2WH"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const $ = (id) => document.getElementById(id);
+const hospitalName = $("hospitalName");
+const welcomeName = $("welcomeName");
+const appointmentsBody = $("appointmentsBody");
+const searchInput = $("searchInput");
+const logoutBtn = $("logoutBtn");
+const datePicker = $("datePicker");
+const todayBtn = $("todayBtn");
+const allDatesBtn = $("allDatesBtn");
+
+let allAppointments = [];
+let patientMap = {};
+let doctorMap = {};
+let currentHospitalId = "";
+let isDefaultHospital = false;
+let selectedDate = "";
+let unsubscribers = [];
+let loadToken = 0;
+let initializedUid = null;
+const attemptedPatients = new Set();
+const attemptedDoctors = new Set();
+
+/* ---------- sidebar + mobile nav scroll-spy ---------- */
+(function initNav() {
+    const navMap = [
+        { desktop: "navDashboard",   mobile: "mnavDashboard",   section: null },
+        { desktop: "navAppointments",mobile: "mnavAppointments",section: "appointments" },
+        { desktop: "navPatients",    mobile: "mnavPatients",    section: "patients" }
+    ];
+
+    const navEls = navMap.map(n => ({
+        desktop: document.getElementById(n.desktop),
+        mobile: document.getElementById(n.mobile),
+        section: n.section ? document.getElementById(n.section) : null,
+        sectionId: n.section ? n.section : "top"
+    }));
+
+    function setActive(sectionId) {
+        navEls.forEach(item => {
+            const isActive = item.sectionId === sectionId;
+            if (item.desktop) item.desktop.classList.toggle("active", isActive);
+            if (item.mobile) item.mobile.classList.toggle("active", isActive);
+        });
+    }
+
+    navEls.forEach(item => {
+        if (item.desktop) {
+            item.desktop.addEventListener("click", () => setActive(item.sectionId));
+        }
+        if (item.mobile) {
+            item.mobile.addEventListener("click", () => setActive(item.sectionId));
+        }
+    });
+
+    const sections = navEls
+        .filter(n => n.section)
+        .map(n => ({ id: n.sectionId, el: n.section }));
+
+    function onScroll() {
+        const scrollY = window.scrollY || window.pageYOffset;
+
+        if (scrollY < 120) {
+            setActive("top");
+            return;
+        }
+
+        let current = "top";
+        const offset = 140;
+
+        for (const s of sections) {
+            const rect = s.el.getBoundingClientRect();
+            if (rect.top <= offset) {
+                current = s.id;
+            }
+        }
+
+        if (window.innerHeight + scrollY >= document.body.offsetHeight - 20) {
+            current = sections[sections.length - 1].id;
+        }
+
+        setActive(current);
+    }
+
+    let ticking = false;
+    window.addEventListener("scroll", () => {
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                onScroll();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }, { passive: true });
+
+    onScroll();
+})();
+
+function normalize(value) { return String(value ?? "").trim().toLowerCase(); }
+function str(value) { return typeof value === "string" && value.trim() ? value.trim() : ""; }
+function escapeHTML(value) {
+    return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+function getInitials(name) {
+    if (!name) return "P";
+    return name.trim().split(/\s+/).slice(0, 2).map(word => word.charAt(0)).join("").toUpperCase();
+}
+function toDateKey(date) {
+    return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0") + "-" + String(date.getDate()).padStart(2, "0");
+}
+function safeDate(value) {
+    if (!value) return null;
+    if (typeof value.toDate === "function") return value.toDate();
+    if (typeof value.seconds === "number") return new Date(value.seconds * 1000);
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? null : d;
+}
+function dateKeyOf(value) {
+    if (!value) return "";
+    if (typeof value === "string") {
+        const m = value.trim().match(/^(\d{4}-\d{2}-\d{2})/);
+        if (m) return m[1];
+    }
+    const d = safeDate(value);
+    return d ? toDateKey(d) : "";
+}
+function formatDateKey(key, long = false) {
+    if (!key) return "—";
+    const [y, m, d] = key.split("-").map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString("en-US", long
+        ? { weekday: "short", month: "short", day: "numeric", year: "numeric" }
+        : { month: "short", day: "numeric", year: "numeric" });
+}
+function getStatus(status) {
+    const value = normalize(status);
+    if (value.includes("cancel") || value.includes("reject")) return "cancelled";
+    if (value.includes("complete") || value === "done") return "completed";
+    if (["now_serving", "now serving", "serving", "in_progress"].includes(value)) return "now_serving";
+    return "waiting";
+}
+
+const STATUS_LABELS = {
+    waiting: "Waiting",
+    now_serving: "Your Turn",
+    completed: "Completed",
+    cancelled: "Cancelled"
+};
+
+const rawStatus = (a) => a.status || a.appointmentStatus || "";
+const getAppointmentDate = (a) => a.date || a.appointmentDate || null;
+const getPatientId = (a) => str(a.patientId) || str(a.patientUid) || str(a.uid);
+
+function getTokenText(a) {
+    const label = str(a.tokenLabel);
+    if (label) return label;
+    const n = a.tokenNumber;
+    if (n !== undefined && n !== null && n !== "" && !isNaN(Number(n))) return "A-" + String(Number(n)).padStart(3, "0");
+    return str(n) || "—";
+}
+function getPatientName(a) {
+    const p = patientMap[getPatientId(a)];
+    return str(a.patientName) || str(a.name) || str(a.fullName) || str(p?.name) || str(p?.fullName) || str(p?.displayName) || "Patient";
+}
+function getPatientEmail(a) {
+    const p = patientMap[getPatientId(a)];
+    return str(a.patientEmail) || str(a.email) || str(p?.email) || "";
+}
+function getDoctorName(a) {
+    const d = doctorMap[str(a.doctorId) || str(a.doctorUid)];
+    return str(a.doctorName) || str(a.doctor) || str(d?.name) || str(d?.fullName) || str(d?.doctorName) || "Not assigned";
+}
+function belongsToHospital(a) {
+    if (isDefaultHospital) return true;
+    const h = a.hospitalId || a.hospitalUid || a.hospital || "";
+    return String(h) === String(currentHospitalId);
+}
+function describeError(error) {
+    const code = String(error?.code || "");
+    if (code.includes("permission-denied")) return { title: "Permission denied", text: "Firestore rules do not allow this action." };
+    if (code.includes("failed-precondition")) return { title: "Firestore index required", text: "Check the browser console for the index link." };
+    if (code.includes("unavailable") || code.includes("network")) return { title: "Network problem", text: "Check your internet connection." };
+    return { title: "Unable to load appointments", text: "Something went wrong." };
+}
+
+async function loadHospitalProfile(user) {
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (snap.exists()) {
+        const data = snap.data();
+        const role = normalize(data.role);
+        if (role && !["hospital", "hospital_admin"].includes(role)) {
+            window.location.replace(role === "patient" ? "patient-dashboard.html" : "index.html");
+            return false;
+        }
+        const name = str(data.hospitalName) || str(data.name) || str(data.displayName) || str(user.displayName) || "Hospital";
+        hospitalName.textContent = name;
+        welcomeName.textContent = name;
+        const avatarEl = $("avatar");
+        if (avatarEl) avatarEl.textContent = name.charAt(0).toUpperCase();
+        currentHospitalId = str(data.hospitalId) || str(data.uid) || user.uid;
+    } else {
+        const name = str(user.displayName) || "Hospital";
+        hospitalName.textContent = name;
+        welcomeName.textContent = name;
+        currentHospitalId = user.uid;
+    }
+    return true;
+}
+
+async function loadDoctors() {
+    try {
+        const ref = collection(db, "doctors");
+        const snapshot = await getDocs(isDefaultHospital ? ref : query(ref, where("hospitalId", "==", currentHospitalId)));
+        doctorMap = {};
+        snapshot.forEach(item => { doctorMap[item.id] = { ...item.data(), id: item.id }; });
+    } catch (error) {
+        console.error("Doctors error:", error);
+    }
+}
+
+async function resolveMissingDetails() {
+    const jobs = [];
+    allAppointments.forEach(a => {
+        const pid = getPatientId(a);
+        if (pid && !patientMap[pid] && !attemptedPatients.has(pid) && (!str(a.patientName) || !getPatientEmail(a))) {
+            attemptedPatients.add(pid);
+            jobs.push(getDoc(doc(db, "users", pid)).then(s => { if (s.exists()) patientMap[pid] = { ...s.data(), id: pid }; }).catch(e => console.warn(e)));
+        }
+        const did = str(a.doctorId) || str(a.doctorUid);
+        if (did && !doctorMap[did] && !attemptedDoctors.has(did) && !str(a.doctorName)) {
+            attemptedDoctors.add(did);
+            jobs.push(getDoc(doc(db, "doctors", did)).then(s => { if (s.exists()) doctorMap[did] = { ...s.data(), id: did }; }).catch(e => console.warn(e)));
+        }
+    });
+    if (jobs.length) { await Promise.all(jobs); renderAppointments(); }
+}
+
+function setLoading() {
+    appointmentsBody.innerHTML = `<tr><td colspan="6"><div class="loading">Loading appointments...</div></td></tr>`;
+    ["totalAppointments", "waitingAppointments", "completedAppointments", "totalPatients"].forEach(id => { $(id).textContent = "…"; });
+}
+
+function showError(error) {
+    const { title, text } = describeError(error);
+    appointmentsBody.innerHTML = `
+        <tr><td colspan="6"><div class="empty-state">
+            <div class="empty-icon">⚠️</div>
+            <h4>${escapeHTML(title)}</h4>
+            <p>${escapeHTML(text)}</p>
+            <button type="button" class="error-retry" id="retryBtn">Retry</button>
+        </div></td></tr>`;
+    ["totalAppointments", "waitingAppointments", "completedAppointments", "totalPatients"].forEach(id => { $(id).textContent = "—"; });
+}
+
+function stopListeners() {
+    unsubscribers.forEach(fn => fn());
+    unsubscribers = [];
+}
+
+function loadAppointments() {
+    stopListeners();
+    const token = ++loadToken;
+    const dateKey = selectedDate;
+    allAppointments = [];
+    setLoading();
+
+    const base = collection(db, "appointments");
+    const hospitalFilter = isDefaultHospital ? [] : [where("hospitalId", "==", currentHospitalId)];
+    const sources = {};
+    let ready = 0;
+    let failed = false;
+    const dateFields = dateKey ? ["date", "appointmentDate"] : [null];
+
+    dateFields.forEach(field => {
+        let q;
+        if (field) q = query(base, ...hospitalFilter, where(field, "==", dateKey));
+        else q = query(base, ...hospitalFilter);
+
+        let first = true;
+        const unsub = onSnapshot(q, snapshot => {
+            if (token !== loadToken) return;
+            sources[field || "all"] = new Map(snapshot.docs.map(d => [d.id, { ...d.data(), id: d.id }]));
+            if (first) { first = false; ready++; }
+            if (ready < dateFields.length || failed) return;
+
+            const merged = new Map();
+            Object.values(sources).forEach(m => m.forEach((v, k) => merged.set(k, v)));
+            allAppointments = [...merged.values()]
+                .filter(belongsToHospital)
+                .filter(a => !dateKey || dateKeyOf(getAppointmentDate(a)) === dateKey)
+                .sort(compareAppointments);
+
+            updateStats();
+            renderAppointments();
+            resolveMissingDetails();
+        }, error => {
+            if (token !== loadToken || failed) return;
+            failed = true;
+            console.error("Appointments error:", error);
+            stopListeners();
+            showError(error);
+        });
+        unsubscribers.push(unsub);
+    });
+}
+
+function compareAppointments(a, b) {
+    const ta = Number(a.tokenNumber), tb = Number(b.tokenNumber);
+    if (!isNaN(ta) && !isNaN(tb) && ta !== tb) return ta - tb;
+    return 0;
+}
+
+function updateStats() {
+    const count = (s) => allAppointments.filter(a => getStatus(rawStatus(a)) === s).length;
+    const patients = new Set();
+    allAppointments.forEach(a => {
+        const key = getPatientId(a) || normalize(getPatientEmail(a)) || (str(a.patientName) ? normalize(a.patientName) : "");
+        if (key) patients.add(key);
+    });
+    $("totalAppointments").textContent = allAppointments.length;
+    $("waitingAppointments").textContent = count("waiting") + count("now_serving");
+    $("completedAppointments").textContent = count("completed");
+    $("totalPatients").textContent = patients.size;
+}
+
+function renderAppointments() {
+    const search = normalize(searchInput.value);
+    const filtered = allAppointments.filter(a => {
+        if (!search) return true;
+        const token = normalize(getTokenText(a));
+        const tokenNum = normalize(a.tokenNumber);
+        return normalize(getPatientName(a)).includes(search) ||
+            normalize(getPatientEmail(a)).includes(search) ||
+            normalize(getDoctorName(a)).includes(search) ||
+            token.includes(search) ||
+            (tokenNum !== "" && tokenNum === search.replace(/^a-?0*/, "").replace(/^0+(?=\d)/, ""));
+    });
+
+    if (filtered.length === 0) {
+        const searching = search && allAppointments.length > 0;
+        appointmentsBody.innerHTML = `
+            <tr><td colspan="6"><div class="empty-state">
+                <div class="empty-icon">📅</div>
+                <h4>${searching ? "No matching appointments" : "No appointments found"}</h4>
+                <p>${searching ? "Try a different search." : "No appointments are scheduled."}</p>
+            </div></td></tr>`;
+        return;
+    }
+
+    appointmentsBody.innerHTML = filtered.map(a => {
+        const name = getPatientName(a);
+        const email = getPatientEmail(a);
+        const status = getStatus(rawStatus(a));
+        const stored = str(rawStatus(a));
+        return `
+            <tr>
+                <td class="token-cell">${escapeHTML(getTokenText(a))}</td>
+                <td>
+                    <div class="patient-cell">
+                        <div class="patient-avatar">${escapeHTML(getInitials(name))}</div>
+                        <div>
+                            <div class="patient-name">${escapeHTML(name)}</div>
+                            <div class="patient-email">${escapeHTML(email || "No email")}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>${escapeHTML(getDoctorName(a))}</td>
+                <td>${escapeHTML(formatDateKey(dateKeyOf(getAppointmentDate(a))))}</td>
+                <td>
+                    <span class="status ${status}" title="Stored status: ${escapeHTML(stored || "none")}">
+                        ${STATUS_LABELS[status]}
+                    </span>
+                </td>
+                <td>
+                    ${status === "completed" || status === "cancelled"
+                        ? `<span class="action-done">${status === "completed" ? "✓ Done" : "—"}</span>`
+                        : `<button type="button" class="complete-btn" data-complete="${escapeHTML(a.id)}">✓ Mark Completed</button>`}
+                </td>
+            </tr>`;
+    }).join("");
+}
+
+function setSelectedDate(key) {
+    if (key === undefined) return;
+    selectedDate = key;
+    datePicker.value = key || "";
+    const todayStr = toDateKey(new Date());
+    const isToday = key === todayStr;
+    const isFuture = key && key > todayStr;
+    $("currentDate").textContent = key ? formatDateKey(key, true) : "All Dates";
+    $("overviewLabel").textContent = key ? (isToday ? "Today's activity" : "Activity for " + formatDateKey(key)) : "All activity";
+    $("appointmentsTitle").textContent = key ? (isToday ? "Today's Appointments" : "Appointments · " + formatDateKey(key)) : "All Appointments";
+    $("appointmentsSubtitle").textContent = key ? (isToday ? "View and manage today's patient appointments" : (isFuture ? "Upcoming appointments for " : "Past appointments for ") + formatDateKey(key, true)) : "View and manage all patient appointments";
+    todayBtn.style.visibility = isToday ? "hidden" : "visible";
+    if (currentHospitalId || isDefaultHospital) loadAppointments();
+    updatePendingHint();
+}
+
+datePicker.addEventListener("change", () => {
+    const val = datePicker.value;
+    if (val) setSelectedDate(val);
+    else setSelectedDate(null);
+});
+todayBtn.addEventListener("click", () => setSelectedDate(toDateKey(new Date())));
+allDatesBtn.addEventListener("click", () => setSelectedDate(null));
+searchInput.addEventListener("input", renderAppointments);
+appointmentsBody.addEventListener("click", (e) => {
+    if (e.target.id === "retryBtn") loadAppointments();
+    const btn = e.target.closest("[data-complete]");
+    if (btn) markCompleted(btn.dataset.complete, btn);
+});
+
+$("pendingHint").addEventListener("click", (e) => {
+    const jump = e.target.closest("[data-jump]");
+    if (jump) setSelectedDate(jump.dataset.jump);
+});
+
+let pendingAll = [];
+let pendingUnsub = null;
+
+function listenPendingApprovals() {
+    if (pendingUnsub) { pendingUnsub(); pendingUnsub = null; }
+    const filters = isDefaultHospital ? [] : [where("hospitalId", "==", currentHospitalId)];
+    const q = query(collection(db, "appointments"), ...filters, where("status", "in", ["waiting", "now_serving"]));
+    pendingUnsub = onSnapshot(q, snapshot => {
+        pendingAll = snapshot.docs.map(d => ({ id: d.id, date: dateKeyOf(getAppointmentDate(d.data())) })).filter(p => p.date);
+        updatePendingHint();
+    }, error => console.warn("Pending-approvals listener skipped:", error.code || error));
+}
+
+function updatePendingHint() {
+    const box = $("pendingHint");
+    const others = pendingAll.filter(p => p.date !== selectedDate);
+    if (!others.length) { box.style.display = "none"; box.innerHTML = ""; return; }
+    const today = toDateKey(new Date());
+    const dates = [...new Set(others.map(p => p.date))].sort();
+    const target = dates.find(d => d >= today) || dates[0];
+    const n = others.length;
+    box.innerHTML = `<span>⏳ ${n} appointment${n === 1 ? "" : "s"} booked on other dates</span>` +
+        `<button type="button" data-jump="${escapeHTML(target)}">View ${escapeHTML(formatDateKey(target))}</button>`;
+    box.style.display = "flex";
+}
+
+// ===== Mark Completed now triggers the next waiting patient to 'now_serving' =====
+async function markCompleted(appointmentId, btn) {
+    const appt = allAppointments.find(a => a.id === appointmentId);
+    if (!appt) return;
+    btn.disabled = true;
+    btn.textContent = "Saving...";
+
+    try {
+        const hospitalId = str(appt.hospitalId) || currentHospitalId;
+        const doctorId = str(appt.doctorId);
+        const date = dateKeyOf(getAppointmentDate(appt));
+        const currentTokenNum = Number(appt.tokenNumber) || 0;
+
+        await updateDoc(doc(db, "appointments", appointmentId), {
+            status: "completed",
+            completedAt: serverTimestamp()
+        });
+
+        if (hospitalId && doctorId && date) {
+            const otherServing = allAppointments.filter(a =>
+                a.id !== appointmentId &&
+                str(a.doctorId) === doctorId &&
+                dateKeyOf(getAppointmentDate(a)) === date &&
+                getStatus(rawStatus(a)) === "now_serving"
+            );
+            for (const other of otherServing) {
+                await updateDoc(doc(db, "appointments", other.id), {
+                    status: "waiting",
+                    updatedAt: serverTimestamp()
+                });
+            }
+
+            const nextWaiting = allAppointments
+                .filter(a =>
+                    a.id !== appointmentId &&
+                    str(a.doctorId) === doctorId &&
+                    getStatus(rawStatus(a)) === "waiting" &&
+                    Number(a.tokenNumber) > currentTokenNum
+                )
+                .sort((a, b) => Number(a.tokenNumber) - Number(b.tokenNumber))[0];
+
+            if (nextWaiting) {
+                await updateDoc(doc(db, "appointments", nextWaiting.id), {
+                    status: "now_serving",
+                    calledAt: serverTimestamp()
+                });
+            }
+
+            await setDoc(doc(db, "hospitalQueues", `${hospitalId}_${doctorId}_${date}`), {
+                currentToken: nextWaiting ? Number(nextWaiting.tokenNumber) : currentTokenNum,
+                updatedAt: serverTimestamp()
+            }, { merge: true });
+        }
+    } catch (error) {
+        console.error("Complete error:", error);
+        btn.disabled = false;
+        btn.textContent = "✓ Mark Completed";
+        alert("Could not mark as completed. " + describeError(error).text);
+    }
+}
+
+// ===== Call Next Patient =====
+async function callNextPatient() {
+    const btn = $("callNextBtn");
+    if (!btn) return;
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = "Calling...";
+
+    try {
+        const todayKey = toDateKey(new Date());
+        const targetDate = selectedDate || todayKey;
+
+        const candidates = allAppointments
+            .filter(a => {
+                const st = getStatus(rawStatus(a));
+                const d = dateKeyOf(getAppointmentDate(a));
+                return st === "waiting" && d === targetDate;
+            })
+            .sort((a, b) => Number(a.tokenNumber) - Number(b.tokenNumber));
+
+        if (candidates.length === 0) {
+            alert("No waiting patients found for " + (selectedDate ? formatDateKey(selectedDate) : "today") + ".");
+            return;
+        }
+
+        const nextAppt = candidates[0];
+        const hospitalId = str(nextAppt.hospitalId) || currentHospitalId;
+        const doctorId = str(nextAppt.doctorId);
+        const date = dateKeyOf(getAppointmentDate(nextAppt));
+        const nextTokenNum = Number(nextAppt.tokenNumber) || 0;
+
+        if (!hospitalId || !doctorId || !date) {
+            alert("Cannot determine hospital/doctor/date for the next patient.");
+            return;
+        }
+
+        const currentlyServingList = allAppointments.filter(a =>
+            str(a.doctorId) === doctorId &&
+            dateKeyOf(getAppointmentDate(a)) === date &&
+            getStatus(rawStatus(a)) === "now_serving"
+        );
+        for (const cs of currentlyServingList) {
+            await updateDoc(doc(db, "appointments", cs.id), {
+                status: "completed",
+                completedAt: serverTimestamp()
+            });
+        }
+
+        await updateDoc(doc(db, "appointments", nextAppt.id), {
+            status: "now_serving",
+            calledAt: serverTimestamp()
+        });
+
+        await setDoc(doc(db, "hospitalQueues", `${hospitalId}_${doctorId}_${date}`), {
+            currentToken: nextTokenNum,
+            updatedAt: serverTimestamp()
+        }, { merge: true });
+
+        btn.textContent = "Called " + (nextAppt.tokenLabel || ("A-" + String(nextTokenNum).padStart(3, "0")));
+        setTimeout(() => { btn.textContent = originalText; }, 1500);
+
+    } catch (error) {
+        console.error("Call next error:", error);
+        alert("Could not call next patient. " + describeError(error).text);
+        btn.textContent = originalText;
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+$("callNextBtn")?.addEventListener("click", callNextPatient);
+
+async function doLogout() {
+    try {
+        stopListeners();
+        if (pendingUnsub) pendingUnsub();
+        if (!isDefaultHospital) await signOut(auth);
+        sessionStorage.removeItem("mqHospitalSession");
+        window.location.replace("index.html");
+    } catch (error) {
+        console.error("Logout error:", error);
+        alert("Unable to logout. Please try again.");
+    }
+}
+
+logoutBtn.addEventListener("click", doLogout);
+$("logoutBtnMobile").addEventListener("click", doLogout);
+
+window.addEventListener("beforeunload", () => { stopListeners(); if (pendingUnsub) pendingUnsub(); });
+
+const doctorModal = $("doctorModal");
+const doctorForm = $("doctorForm");
+
+function openDoctorModal() {
+    if (!currentHospitalId && !isDefaultHospital) {
+        alert("Hospital not loaded yet. Please wait.");
+        return;
+    }
+    doctorForm.reset();
+    doctorModal.style.display = "flex";
+}
+
+function closeDoctorModal() { doctorModal.style.display = "none"; }
+
+$("addDoctorNav").addEventListener("click", (e) => { e.preventDefault(); openDoctorModal(); });
+$("mnavAddDoctor").addEventListener("click", (e) => { e.preventDefault(); openDoctorModal(); });
+$("closeDoctorModal").addEventListener("click", closeDoctorModal);
+$("cancelDoctor").addEventListener("click", closeDoctorModal);
+doctorModal.addEventListener("click", (e) => { if (e.target === doctorModal) closeDoctorModal(); });
+
+doctorForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = $("saveDoctorBtn");
+    const name = str($("docName").value);
+    const specialization = str($("docSpec").value);
+
+    if (!name || !specialization) { alert("Doctor name and specialization are required."); return; }
+
+    btn.disabled = true;
+    btn.textContent = "Saving...";
+
+    try {
+        await addDoc(collection(db, "doctors"), {
+            name, fullName: name, doctorName: name, specialization,
+            email: str($("docEmail").value),
+            phone: str($("docPhone").value),
+            qualification: str($("docQual").value),
+            experience: Number($("docExp").value) || 0,
+            hospitalId: currentHospitalId,
+            createdAt: serverTimestamp()
+        });
+        alert("✅ Doctor added successfully!");
+        closeDoctorModal();
+        await loadDoctors();
+        renderAppointments();
+    } catch (error) {
+        console.error("Add doctor error:", error);
+        alert("Failed to save doctor. Please try again.");
+    } finally {
+        btn.disabled = false;
+        btn.textContent = "Save Doctor";
+    }
+});
+
+const todayKey = toDateKey(new Date());
+datePicker.value = todayKey;
+selectedDate = todayKey;
+setSelectedDate(todayKey);
+
+onAuthStateChanged(auth, async user => {
+    const defaultSession = sessionStorage.getItem("mqHospitalSession") === "default-hospital";
+    if (!user && !defaultSession) { stopListeners(); window.location.replace("index.html"); return; }
+
+    const uid = user ? user.uid : "default-hospital";
+    if (initializedUid === uid) return;
+    initializedUid = uid;
+    isDefaultHospital = !user && defaultSession;
+
+    try {
+        if (user) {
+            const allowed = await loadHospitalProfile(user);
+            if (!allowed) return;
+        } else {
+            currentHospitalId = "default-hospital";
+            hospitalName.textContent = "24/7 Hospital";
+            welcomeName.textContent = "24/7 Hospital";
+            const avatarEl = $("avatar");
+            if (avatarEl) avatarEl.textContent = "D";
+        }
+        await loadDoctors();
+        loadAppointments();
+        listenPendingApprovals();
+    } catch (error) {
+        console.error("Dashboard initialization error:", error);
+        showError(error);
+    }
+});
+</script>
+</body>
+</html>

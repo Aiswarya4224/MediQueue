@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediQueue | Login</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+/* ============================================================
+   MIDNIGHT OCEAN + LIQUID GLASS  (login page)
+   ============================================================ */
+
+:root {
+    --bg: #060b14;
+    --bg-2: #0a1220;
+    --panel-a: rgba(14, 24, 40, 0.72);
+    --panel-b: rgba(10, 18, 32, 0.55);
+    --input: rgba(255, 255, 255, 0.04);
+    --border: rgba(255, 255, 255, 0.12);
+    --text: #e6f1ff;
+    --muted: #7d92b0;
+    --aqua: #5eead4;
+    --sea: #22d3ee;
+    --cobalt: #3b82f6;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 25px;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* ---- Deep ocean background blobs ---- */
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+body::before {
+    width: 520px;
+    height: 520px;
+    background: radial-gradient(circle, #0e7490, #082f49 70%);
+    opacity: .55;
+    top: -180px;
+    left: -160px;
+    animation: driftA 26s ease-in-out infinite alternate;
+}
+
+body::after {
+    width: 460px;
+    height: 460px;
+    background: radial-gradient(circle, #1e40af, #0f1e4a 70%);
+    opacity: .5;
+    bottom: -160px;
+    right: -120px;
+    animation: driftB 30s ease-in-out infinite alternate;
+}
+
+@keyframes driftA {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(110px, 80px) scale(1.15); }
+}
+
+@keyframes driftB {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(-100px, -90px) scale(1.2); }
+}
+
+.container {
+    width: 100%;
+    max-width: 1050px;
+    min-height: 650px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-radius: 30px;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+
+    background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.08),
+        rgba(255, 255, 255, 0.02) 45%,
+        rgba(8, 16, 30, 0.6)
+    );
+    border: 1px solid var(--border);
+    backdrop-filter: blur(34px) saturate(180%);
+    -webkit-backdrop-filter: blur(34px) saturate(180%);
+    box-shadow:
+        0 34px 80px -14px rgba(0, 0, 0, 0.8),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        inset 0 -2px 14px rgba(0, 0, 0, 0.45);
+}
+
+.container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 8%;
+    right: 8%;
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(94, 234, 212, 0.85),
+        rgba(255, 255, 255, 0.9),
+        transparent
+    );
+    border-radius: 50%;
+    filter: blur(0.5px);
+    z-index: 5;
+}
+
+/* ================= LEFT PANEL ================= */
+.left {
+    padding: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    background:
+        radial-gradient(ellipse at 30% 20%, rgba(34, 211, 238, 0.12), transparent 60%),
+        radial-gradient(ellipse at 80% 90%, rgba(59, 130, 246, 0.12), transparent 55%);
+    border-right: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.left::after {
+    content: "";
+    position: absolute;
+    top: -40%;
+    left: -20%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(
+        circle,
+        rgba(34, 211, 238, 0.16),
+        transparent 70%
+    );
+    pointer-events: none;
+    z-index: 0;
+}
+
+.left > * {
+    position: relative;
+    z-index: 1;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 23px;
+    font-weight: 700;
+    color: #d6f5ff;
+    text-shadow: 0 0 26px rgba(94, 234, 212, 0.45);
+}
+
+.logo-icon {
+    width: 45px;
+    height: 45px;
+    display: grid;
+    place-items: center;
+    border-radius: 13px;
+    background: linear-gradient(135deg, #5eead4, #22d3ee 60%, #3b82f6);
+    color: #031118;
+    font-size: 26px;
+    font-weight: 700;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    box-shadow:
+        0 8px 24px rgba(34, 211, 238, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        inset 0 -2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.left-content {
+    margin: 65px 0;
+}
+
+.left-content h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(32px, 4vw, 46px);
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+    margin-bottom: 20px;
+    color: #f2faff;
+    text-shadow: 0 2px 40px rgba(94, 234, 212, 0.1);
+}
+
+.left-content h1 span {
+    background: linear-gradient(120deg, #5eead4, #22d3ee 50%, #60a5fa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    filter: drop-shadow(0 0 26px rgba(34, 211, 238, 0.35));
+}
+
+.left-content p {
+    color: #8fa5c4;
+    line-height: 1.8;
+    max-width: 380px;
+    font-size: 15px;
+}
+
+.secure {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #8fa5c4;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.secure span {
+    color: var(--aqua);
+    font-size: 18px;
+    filter: drop-shadow(0 0 8px rgba(94, 234, 212, 0.7));
+}
+
+/* ================= RIGHT PANEL ================= */
+.right {
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    background: rgba(6, 11, 20, 0.35);
+}
+
+.right::before {
+    content: "";
+    position: absolute;
+    top: -30%;
+    right: -20%;
+    width: 280px;
+    height: 280px;
+    background: radial-gradient(
+        circle,
+        rgba(34, 211, 238, 0.12),
+        transparent 70%
+    );
+    pointer-events: none;
+}
+
+.right > * {
+    position: relative;
+    z-index: 1;
+}
+
+.header {
+    margin-bottom: 26px;
+}
+
+.header h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 9px;
+    color: #f0f8ff;
+}
+
+.header p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* ================= TABS ================= */
+.tabs {
+    display: flex;
+    gap: 6px;
+    padding: 5px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 -2px 8px rgba(0, 0, 0, 0.3);
+    margin-bottom: 24px;
+}
+
+.tab {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--muted);
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 13.5px;
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.tab.active {
+    color: #031118;
+    background: linear-gradient(135deg, #5eead4, #22d3ee 60%, #60a5fa);
+    box-shadow:
+        0 6px 20px rgba(34, 211, 238, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6),
+        inset 0 -2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.tab:not(.active):hover {
+    color: #c6f4ff;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+/* ================= INPUTS ================= */
+.field {
+    margin-bottom: 18px;
+}
+
+.field label {
+    display: block;
+    color: #c7d4e5;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 9px;
+    letter-spacing: 0.2px;
+}
+
+.field input {
+    width: 100%;
+    padding: 15px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.04);
+    color: #f2faff;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        inset 0 -2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.field input:focus {
+    border-color: rgba(94, 234, 212, 0.7);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow:
+        0 0 0 3px rgba(94, 234, 212, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        inset 0 -2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.field input::placeholder {
+    color: #5d718a;
+}
+
+/* ================= PASSWORD ================= */
+.password-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 9px;
+}
+
+.password-row label {
+    margin: 0 !important;
+}
+
+.password-box {
+    position: relative;
+}
+
+.password-box input {
+    padding-right: 50px;
+}
+
+.eye-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: #7d92b0;
+    cursor: pointer;
+    padding: 5px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    transition: color 0.2s, background 0.2s;
+}
+
+.eye-btn svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+.eye-btn:hover {
+    color: var(--aqua);
+    background: rgba(94, 234, 212, 0.08);
+}
+
+.forgot {
+    background: transparent;
+    border: none;
+    color: var(--aqua);
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+}
+
+/* ================= MAIN BUTTON ================= */
+.submit {
+    position: relative;
+    width: 100%;
+    padding: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 13px;
+    background: linear-gradient(135deg, #5eead4, #22d3ee 55%, #3b82f6);
+    color: #031118;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    margin-top: 5px;
+    transition: transform 0.25s, box-shadow 0.25s;
+    overflow: hidden;
+    box-shadow:
+        0 10px 32px rgba(34, 211, 238, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        inset 0 -3px 12px rgba(0, 0, 0, 0.22);
+}
+
+.submit::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        120deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.65) 50%,
+        transparent 70%
+    );
+    transform: translateX(-130%);
+    transition: transform 0.7s;
+}
+
+.submit:hover::after {
+    transform: translateX(130%);
+}
+
+.submit:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 16px 44px rgba(34, 211, 238, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.85),
+        inset 0 -3px 12px rgba(0, 0, 0, 0.22);
+}
+
+button:disabled {
+    opacity: .6;
+    cursor: wait;
+    transform: none !important;
+}
+
+/* ================= DIVIDER ================= */
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 22px 0;
+    color: #71859d;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.14),
+        transparent
+    );
+}
+
+/* ================= GOOGLE BUTTON ================= */
+.google-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 13px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.045);
+    color: #f2faff;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.google-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(94, 234, 212, 0.5);
+    box-shadow:
+        0 6px 26px rgba(34, 211, 238, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.google-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* ================= MESSAGE ================= */
+.message {
+    min-height: 20px;
+    margin-top: 15px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--muted);
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.message.error {
+    color: #ff9292;
+}
+
+.message.success {
+    color: #75e6b1;
+}
+
+/* ================= FOOTER ================= */
+.bottom {
+    text-align: center;
+    color: #7089a8;
+    font-size: 12px;
+    line-height: 1.7;
+    margin-top: 25px;
+}
+
+.bottom a {
+    color: var(--aqua);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 800px) {
+    body {
+        padding: 15px;
+    }
+
+    .container {
+        max-width: 500px;
+        grid-template-columns: 1fr;
+    }
+
+    .left {
+        padding: 30px;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .left-content {
+        margin: 35px 0;
+    }
+
+    .left-content h1 {
+        font-size: 34px;
+    }
+
+    .right {
+        padding: 35px 30px;
+    }
+}
+
+@media (max-width: 420px) {
+    .left {
+        padding: 25px;
+    }
+
+    .right {
+        padding: 30px 22px;
+    }
+
+    .header h2 {
+        font-size: 26px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- LEFT SIDE -->
+
+    <section class="left">
+
+        <div class="logo">
+            <div class="logo-icon">✚</div>
+            MediQueue
+        </div>
+
+        <div class="left-content">
+
+            <h1>
+                Your health.<br>
+                Your time.<br>
+                <span>Our priority.</span>
+            </h1>
+
+            <p>
+                Smart hospital appointments and real-time
+                queue management. Experience healthcare
+                without unnecessary waiting.
+            </p>
+
+        </div>
+
+        <div class="secure">
+            <span>◉</span>
+            Secure patient access
+        </div>
+
+    </section>
+
+    <!-- RIGHT SIDE -->
+
+    <section class="right">
+
+        <div class="header">
+            <h2 id="formTitle">Welcome</h2>
+            <p id="formSubtitle">Login to your MediQueue account</p>
+        </div>
+
+        <!-- LOGIN TABS -->
+
+        <div class="tabs">
+
+            <button
+                type="button"
+                class="tab active"
+                id="patientTab">
+                Patient Login
+            </button>
+
+            <button
+                type="button"
+                class="tab"
+                id="hospitalTab">
+                Hospital Login
+            </button>
+
+        </div>
+
+        <!-- LOGIN FORM -->
+
+        <form id="authForm">
+
+            <div class="field">
+
+                <label for="email">Email Address</label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    required>
+
+            </div>
+
+            <div class="field">
+
+                <div class="password-row">
+
+                    <label for="password">Password</label>
+
+                    <!-- <button
+                        type="button"
+                        class="forgot"
+                        id="forgotBtn">
+                        Forgot password?
+                    </button> -->
+
+                </div>
+
+                <div class="password-box">
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        minlength="6"
+                        required>
+
+                    <button
+                        type="button"
+                        class="eye-btn"
+                        id="togglePassword"
+                        aria-label="Show password"
+                        aria-pressed="false">
+
+                        <svg
+                            id="eyeOpen"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+
+                        </svg>
+
+                        <svg
+                            id="eyeOff"
+                            class="hidden"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+
+                            <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path>
+                            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"></path>
+                            <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"></path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+
+                        </svg>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <button
+                class="submit"
+                id="submitBtn"
+                type="submit">
+                Login as Patient →
+            </button>
+
+            <div
+                class="message"
+                id="message"
+                role="status"
+                aria-live="polite">
+            </div>
+
+        </form>
+
+        <!-- GOOGLE SIGN-IN -->
+
+        <div class="divider">
+            <span>OR CONTINUE WITH</span>
+        </div>
+
+        <button
+            type="button"
+            class="google-btn"
+            id="googleBtn">
+
+            <svg viewBox="0 0 48 48">
+
+                <path
+                    fill="#EA4335"
+                    d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+
+                <path
+                    fill="#4285F4"
+                    d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+
+                <path
+                    fill="#FBBC05"
+                    d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+
+                <path
+                    fill="#34A853"
+                    d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+
+            </svg>
+
+            <span id="googleBtnText">
+                Sign in with Google
+            </span>
+
+        </button>
+
+        <div class="bottom">
+
+            By continuing, you agree to our<br>
+
+            <a href="#">Terms</a>
+            and
+            <a href="#">Privacy Policy</a>.
+
+        </div>
+
+    </section>
+
+</div>
+
+<!-- FIREBASE -->
+
+<script type="module">
+
+import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    sendPasswordResetEmail,
+    signOut,
+    GoogleAuthProvider,
+    signInWithPopup
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+import {
+    getFirestore,
+    doc,
+    getDoc,
+    setDoc,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+
+/* FIREBASE CONFIG */
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCc9N5SFCQdkm-WvLBBDtY5TadztcT1I6E",
+    authDomain: "mediqueue-88ee8.firebaseapp.com",
+    projectId: "mediqueue-88ee8",
+    storageBucket: "mediqueue-88ee8.firebasestorage.app",
+    messagingSenderId: "673881042044",
+    appId: "1:673881042044:web:012f9cc55e2472399a6df9",
+    measurementId: "G-30HED1L2WH"
+};
+
+
+/* INITIALIZE FIREBASE */
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+
+/* ELEMENTS */
+
+const authForm = document.getElementById("authForm");
+
+const patientTab = document.getElementById("patientTab");
+const hospitalTab = document.getElementById("hospitalTab");
+
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+
+const togglePassword = document.getElementById("togglePassword");
+const eyeOpen = document.getElementById("eyeOpen");
+const eyeOff = document.getElementById("eyeOff");
+
+const submitBtn = document.getElementById("submitBtn");
+const googleBtn = document.getElementById("googleBtn");
+const googleBtnText = document.getElementById("googleBtnText");
+
+const forgotBtn = document.getElementById("forgotBtn");
+const message = document.getElementById("message");
+
+const formTitle = document.getElementById("formTitle");
+const formSubtitle = document.getElementById("formSubtitle");
+
+const divider = document.querySelector(".divider");
+
+
+/* HOSPITAL DEMO CREDENTIALS */
+
+const DEFAULT_HOSPITAL_EMAIL = "hospital@mediqueue.com";
+const DEFAULT_HOSPITAL_PASSWORD = "Hospital@123";
+
+
+/* LOGIN MODE */
+
+let loginRole = "patient";
+
+
+/* MESSAGE */
+
+function showMessage(text, type = "") {
+
+    message.textContent = text;
+    message.className = "message " + type;
+
+}
+
+
+/* PASSWORD SHOW / HIDE */
+
+function setPasswordVisible(visible) {
+
+    passwordInput.type = visible ? "text" : "password";
+
+    eyeOpen.classList.toggle("hidden", visible);
+    eyeOff.classList.toggle("hidden", !visible);
+
+    togglePassword.setAttribute(
+        "aria-label",
+        visible ? "Hide password" : "Show password"
+    );
+
+    togglePassword.setAttribute(
+        "aria-pressed",
+        String(visible)
+    );
+
+}
+
+togglePassword.addEventListener("click", () => {
+
+    setPasswordVisible(passwordInput.type === "password");
+
+    passwordInput.focus();
+
+});
+
+
+/* PATIENT / HOSPITAL MODE */
+
+function setMode(role) {
+
+    loginRole = role;
+
+    const isPatient = role === "patient";
+
+    patientTab.classList.toggle("active", isPatient);
+    hospitalTab.classList.toggle("active", !isPatient);
+
+    formTitle.textContent = isPatient
+        ? "Welcome back"
+        : "Hospital portal";
+
+    formSubtitle.textContent = isPatient
+        ? "Login to your MediQueue patient account"
+        : "Login with your hospital staff account";
+
+    submitBtn.textContent = isPatient
+        ? "Login as Patient →"
+        : "Login as Hospital →";
+
+    passwordInput.autocomplete = "current-password";
+
+    googleBtn.classList.toggle("hidden", !isPatient);
+    divider.classList.toggle("hidden", !isPatient);
+
+    if (forgotBtn) {
+        forgotBtn.classList.remove("hidden");
+    }
+
+    setPasswordVisible(false);
+
+    showMessage("");
+
+}
+
+patientTab.addEventListener("click", () => {
+    setMode("patient");
+});
+
+hospitalTab.addEventListener("click", () => {
+    setMode("hospital");
+});
+
+
+/* ERROR HANDLING */
+
+function getErrorMessage(error) {
+
+    switch (error.code) {
+
+        case "auth/invalid-email":
+            return "Please enter a valid email address.";
+
+        case "auth/invalid-credential":
+        case "auth/wrong-password":
+        case "auth/user-not-found":
+            return "Invalid email or password.";
+
+        case "auth/too-many-requests":
+            return "Too many attempts. Please try again later.";
+
+        case "auth/network-request-failed":
+            return "Network error. Check your internet connection.";
+
+        case "auth/popup-closed-by-user":
+        case "auth/cancelled-popup-request":
+            return "Google account selection cancelled.";
+
+        case "auth/popup-blocked":
+            return "Popup blocked. Allow popups and try again.";
+
+        case "auth/unauthorized-domain":
+            return "This domain is not authorized in Firebase Authentication settings.";
+
+        case "auth/operation-not-supported-in-this-environment":
+            return "Open this page through localhost or HTTPS, not by double-clicking the file.";
+
+        case "auth/invalid-api-key":
+            return "Invalid Firebase API key. Check firebaseConfig.";
+
+        case "auth/operation-not-allowed":
+            return "Enable Email/Password and Google in Firebase Authentication.";
+
+        case "permission-denied":
+        case "firestore/permission-denied":
+            return "Firestore permission denied. Check Firestore security rules.";
+
+        default:
+            console.error(error);
+            return error.message || "Something went wrong. Check the browser console.";
+
+    }
+
+}
+
+
+/* VERIFY USER ROLE */
+
+async function verifyRoleAndRedirect(user, expectedRole) {
+
+    try {
+
+        const userRef = doc(db, "users", user.uid);
+
+        let profileSnap = await getDoc(userRef);
+
+        if (!profileSnap.exists()) {
+
+            if (expectedRole !== "patient") {
+
+                showMessage(
+                    "Hospital profile not found. Contact the administrator.",
+                    "error"
+                );
+
+                return false;
+
+            }
+
+            await setDoc(userRef, {
+
+                uid: user.uid,
+
+                name: user.displayName || "Patient",
+
+                email: user.email || "",
+
+                role: "patient",
+
+                createdAt: serverTimestamp()
+
+            });
+
+            profileSnap = await getDoc(userRef);
+
+        }
+
+        if (!profileSnap.exists()) {
+
+            showMessage(
+                "Unable to create your patient profile. Please try again.",
+                "error"
+            );
+
+            return false;
+
+        }
+
+        const profile = profileSnap.data();
+
+        const role = String(
+            profile.role || ""
+        ).trim().toLowerCase();
+
+        const allowed = expectedRole === "patient"
+            ? role === "patient"
+            : ["hospital", "hospital_admin"].includes(role);
+
+        if (!allowed) {
+
+            showMessage(
+                expectedRole === "patient"
+                    ? "This account is not registered as a patient. Contact the administrator."
+                    : "This account is not authorized for hospital access.",
+                "error"
+            );
+
+            return false;
+
+        }
+
+        showMessage(
+            "Login successful! Redirecting...",
+            "success"
+        );
+
+        window.location.href = expectedRole === "patient"
+            ? "patient-dashboard.html"
+            : "hospital-dashboard.html";
+
+        return true;
+
+    } catch (error) {
+
+        console.error("Profile verification error:", error);
+
+        showMessage(
+            error.code === "permission-denied"
+                ? "Firestore permission denied. Check Firestore security rules."
+                : "Unable to verify or create your profile. Please try again.",
+            "error"
+        );
+
+        return false;
+
+    }
+
+}
+
+
+/* ============================================================
+   HOSPITAL DEMO LOGIN  —  FIXED
+   ------------------------------------------------------------
+   The bug: if a patient was previously signed in (Firebase
+   persists auth in localStorage), hospital-dashboard's
+   onAuthStateChanged would still see the PATIENT user and
+   redirect to patient-dashboard instead of loading the
+   hospital dashboard.
+
+   Fix: sign out any existing Firebase session BEFORE setting
+   the demo session flag, so hospital-dashboard sees user=null
+   + the demo flag → loads hospital dashboard correctly.
+   ============================================================ */
+
+async function handleHospitalLogin(email, password) {
+
+    const emailMatches =
+        email.toLowerCase() === DEFAULT_HOSPITAL_EMAIL.toLowerCase();
+
+    const passwordMatches =
+        password === DEFAULT_HOSPITAL_PASSWORD;
+
+    if (emailMatches && passwordMatches) {
+
+        showMessage(
+            "Hospital login successful! Redirecting...",
+            "success"
+        );
+
+        try {
+
+            /* ---- CRITICAL FIX ---- */
+            /* Clear any lingering Firebase auth session so the
+               hospital dashboard's onAuthStateChanged sees
+               user = null and uses the demo session.          */
+            try {
+                await signOut(auth);
+            } catch (signOutError) {
+                console.warn("signOut before demo login:", signOutError);
+            }
+
+            sessionStorage.setItem(
+                "mqHospitalSession",
+                "default-hospital"
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+        }
+
+        setTimeout(() => {
+
+            window.location.href = "hospital-dashboard.html";
+
+        }, 700);
+
+        return true;
+
+    }
+
+    showMessage(
+        "Invalid hospital email or password.",
+        "error"
+    );
+
+    return false;
+
+}
+
+
+/* EMAIL LOGIN */
+
+authForm.addEventListener("submit", async event => {
+
+    event.preventDefault();
+
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!email || !password) {
+
+        showMessage(
+            "Enter your email and password.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    submitBtn.disabled = true;
+    googleBtn.disabled = true;
+
+    submitBtn.textContent = "Please wait...";
+
+    showMessage("");
+
+    try {
+
+        /* HOSPITAL MODE */
+
+        if (loginRole === "hospital") {
+
+            await handleHospitalLogin(email, password);
+
+            return;
+
+        }
+
+        /* PATIENT MODE */
+
+        const credential = await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
+
+        await verifyRoleAndRedirect(
+            credential.user,
+            "patient"
+        );
+
+    } catch (error) {
+
+        showMessage(
+            getErrorMessage(error),
+            "error"
+        );
+
+    } finally {
+
+        submitBtn.disabled = false;
+        googleBtn.disabled = false;
+
+        submitBtn.textContent = loginRole === "patient"
+            ? "Login as Patient →"
+            : "Login as Hospital →";
+
+    }
+
+});
+
+
+/* GOOGLE SIGN-IN — PATIENT ONLY */
+
+googleBtn.addEventListener("click", async () => {
+
+    if (loginRole !== "patient") return;
+
+    googleBtn.disabled = true;
+    submitBtn.disabled = true;
+
+    googleBtnText.textContent = "Opening Google accounts...";
+
+    showMessage("");
+
+    try {
+
+        const provider = new GoogleAuthProvider();
+
+        provider.setCustomParameters({
+            prompt: "select_account"
+        });
+
+        const result = await signInWithPopup(
+            auth,
+            provider
+        );
+
+        await verifyRoleAndRedirect(
+            result.user,
+            "patient"
+        );
+
+    } catch (error) {
+
+        showMessage(
+            getErrorMessage(error),
+            "error"
+        );
+
+    } finally {
+
+        googleBtn.disabled = false;
+        submitBtn.disabled = false;
+
+        googleBtnText.textContent = "Sign in with Google";
+
+    }
+
+});
+
+
+/* FORGOT PASSWORD */
+
+if (forgotBtn) {
+    forgotBtn.addEventListener("click", async () => {
+
+        if (loginRole === "hospital") {
+
+            showMessage(
+                "Hospital password reset is managed by the administrator.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        const email = emailInput.value.trim();
+
+        if (!email) {
+
+            showMessage(
+                "Enter your email address first.",
+                "error"
+            );
+
+            emailInput.focus();
+
+            return;
+
+        }
+
+        try {
+
+            await sendPasswordResetEmail(
+                auth,
+                email
+            );
+
+            showMessage(
+                "If an account exists for this email, a reset link will be sent.",
+                "success"
+            );
+
+        } catch (error) {
+
+            showMessage(
+                error.code === "auth/invalid-email"
+                    ? "Enter a valid email address."
+                    : "Unable to send reset email. Please try again.",
+                "error"
+            );
+
+            console.error(error);
+
+        }
+
+    });
+}
+
+
+/* ============================================================
+   CLEAR STALE DEMO SESSION ON PAGE LOAD
+   ------------------------------------------------------------
+   When the login page opens, remove any leftover demo flag so
+   that a fresh patient login is never accidentally treated as
+   a hospital demo session.
+   ============================================================ */
+
+try {
+    sessionStorage.removeItem("mqHospitalSession");
+} catch (error) {
+    console.warn("Could not clear stale demo session:", error);
+}
+
+
+/* INITIAL MODE */
+
+setMode("patient");
+
+</script>
+
+</body>
+</html>

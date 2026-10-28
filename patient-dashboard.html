@@ -1,0 +1,1957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MediQueue | Patient Dashboard</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   MIDNIGHT OCEAN + LIQUID GLASS  —  Patient Dashboard
+   - Sidebar on desktop, horizontal nav pill on mobile
+   - Smooth anchor scrolling + scroll-spy active nav
+   ============================================================ */
+
+:root {
+    --bg: #060b14;
+    --bg-2: #0a1220;
+    --card: rgba(255, 255, 255, 0.045);
+    --card-hover: rgba(255, 255, 255, 0.075);
+    --border: rgba(255, 255, 255, 0.12);
+    --border-soft: rgba(255, 255, 255, 0.07);
+    --primary: #22d3ee;
+    --primary-light: #5eead4;
+    --accent: #3b82f6;
+    --text: #e6f1ff;
+    --muted: #7d92b0;
+    --green: #4ade80;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --radius: 20px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* ---- Deep ocean animated background ---- */
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+body::before {
+    width: 560px;
+    height: 560px;
+    background: radial-gradient(circle, #0e7490, #082f49 70%);
+    opacity: .45;
+    top: -200px;
+    left: -180px;
+    animation: driftA 28s ease-in-out infinite alternate;
+}
+
+body::after {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, #1e40af, #0f1e4a 70%);
+    opacity: .4;
+    bottom: -180px;
+    right: -140px;
+    animation: driftB 32s ease-in-out infinite alternate;
+}
+
+@keyframes driftA {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(110px, 80px) scale(1.15); }
+}
+@keyframes driftB {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(-100px, -90px) scale(1.2); }
+}
+
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+
+.app {
+    display: flex;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+}
+
+/* ================= SIDEBAR (desktop only) ================= */
+.sidebar {
+    width: 250px;
+    padding: 28px 18px;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 10;
+
+    background: linear-gradient(
+        160deg,
+        rgba(255, 255, 255, 0.07),
+        rgba(255, 255, 255, 0.02) 40%,
+        rgba(8, 16, 30, 0.65)
+    );
+    border-right: 1px solid var(--border);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    box-shadow:
+        0 0 60px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.sidebar::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 12%;
+    right: 12%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(94, 234, 212, 0.6),
+        transparent
+    );
+    border-radius: 50%;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 12px;
+    margin-bottom: 45px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 21px;
+    font-weight: 700;
+    color: #d6f5ff;
+    text-shadow: 0 0 26px rgba(94, 234, 212, 0.4);
+}
+
+.logo-icon {
+    width: 43px;
+    height: 43px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, #5eead4, #22d3ee 60%, #3b82f6);
+    border-radius: 13px;
+    font-size: 22px;
+    color: #031118;
+    font-weight: 700;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    box-shadow:
+        0 8px 24px rgba(34, 211, 238, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        inset 0 -2px 8px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+}
+
+.logo-text span {
+    background: linear-gradient(120deg, #5eead4, #22d3ee);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.nav-label {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 0 12px;
+    margin-bottom: 14px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 13px 15px;
+    margin-bottom: 6px;
+    color: var(--muted);
+    text-decoration: none;
+    border-radius: 13px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    border: 1px solid transparent;
+}
+
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.nav-item.active {
+    background: linear-gradient(
+        135deg,
+        rgba(94, 234, 212, 0.18),
+        rgba(34, 211, 238, 0.1)
+    );
+    color: #a8f0e4;
+    border: 1px solid rgba(94, 234, 212, 0.35);
+    box-shadow:
+        0 4px 18px rgba(34, 211, 238, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.nav-icon {
+    width: 22px;
+    text-align: center;
+    font-size: 17px;
+    flex-shrink: 0;
+}
+
+.sidebar-bottom { margin-top: auto; }
+
+.profile-card {
+    background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.08),
+        rgba(255, 255, 255, 0.02)
+    );
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 14px;
+    margin-bottom: 15px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.profile-row {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.avatar {
+    width: 39px;
+    height: 39px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(
+        145deg,
+        rgba(94, 234, 212, 0.28),
+        rgba(59, 130, 246, 0.16)
+    );
+    color: #7ff5e0;
+    border-radius: 12px;
+    font-weight: 700;
+    border: 1px solid rgba(94, 234, 212, 0.32);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+.profile-name { font-size: 13px; font-weight: 700; color: #f0f8ff; }
+.profile-role { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+.logout-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 12px;
+    border-radius: 13px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.logout-btn:hover {
+    background: rgba(248, 113, 113, 0.1);
+    border-color: rgba(248, 113, 113, 0.35);
+    color: var(--red);
+}
+
+/* ================= MOBILE TOP BAR (hidden on desktop) ================= */
+.mobile-topbar {
+    display: none;
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    padding: 14px 16px;
+    background: linear-gradient(
+        160deg,
+        rgba(14, 24, 40, 0.92),
+        rgba(8, 16, 30, 0.92)
+    );
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.mobile-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #d6f5ff;
+}
+
+.mobile-logo .logo-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 17px;
+    border-radius: 10px;
+}
+
+.mobile-logout {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 14px;
+    border-radius: 11px;
+    background: rgba(248, 113, 113, 0.12);
+    color: #fca5a5;
+    border: 1px solid rgba(248, 113, 113, 0.35);
+    font-size: 12px;
+    font-weight: 700;
+    transition: background 0.2s;
+}
+
+.mobile-logout:hover {
+    background: rgba(248, 113, 113, 0.22);
+}
+
+/* ---- Mobile horizontal nav tabs ---- */
+.mobile-nav {
+    display: none;
+    position: sticky;
+    top: 63px;
+    z-index: 55;
+    padding: 10px 12px;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    background: rgba(6, 11, 20, 0.85);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.mobile-nav::-webkit-scrollbar { display: none; }
+
+.mobile-nav a {
+    flex-shrink: 0;
+    padding: 9px 16px;
+    border-radius: 20px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--muted);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.04);
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.mobile-nav a.active {
+    background: linear-gradient(135deg, #5eead4, #22d3ee 60%, #60a5fa);
+    color: #031118;
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 16px rgba(34, 211, 238, 0.35);
+}
+
+/* ================= MAIN ================= */
+.main {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    padding: 32px 38px 60px;
+    position: relative;
+    z-index: 1;
+}
+
+#bookSection,
+#trackingSection,
+#appointmentsSection {
+    scroll-margin-top: 100px;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.page-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 27px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #f2faff;
+    text-shadow: 0 2px 30px rgba(94, 234, 212, 0.1);
+}
+
+.page-subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 7px;
+}
+
+.live-indicator {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #4ade80;
+    padding: 9px 16px;
+    background: rgba(74, 222, 128, 0.1);
+    border: 1px solid rgba(74, 222, 128, 0.3);
+    border-radius: 12px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+.live-indicator::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    background: #4ade80;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #4ade80;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+/* ---- Welcome banner ---- */
+.welcome {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(
+        115deg,
+        rgba(14, 116, 144, 0.28),
+        rgba(30, 64, 175, 0.28) 55%,
+        rgba(34, 211, 238, 0.18)
+    );
+    border: 1px solid rgba(94, 234, 212, 0.25);
+    border-radius: 24px;
+    padding: 30px 32px;
+    margin-bottom: 28px;
+    backdrop-filter: blur(24px) saturate(170%);
+    -webkit-backdrop-filter: blur(24px) saturate(170%);
+    box-shadow:
+        0 20px 50px -12px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -2px 12px rgba(0, 0, 0, 0.3);
+}
+
+.welcome::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 8%;
+    right: 8%;
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(94, 234, 212, 0.85),
+        rgba(255, 255, 255, 0.9),
+        transparent
+    );
+    border-radius: 50%;
+    filter: blur(0.5px);
+}
+
+.welcome::after {
+    content: "✚";
+    position: absolute;
+    right: 45px;
+    top: 0;
+    font-size: 140px;
+    font-weight: 700;
+    color: rgba(94, 234, 212, 0.06);
+    transform: rotate(-15deg);
+    pointer-events: none;
+}
+
+.welcome h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #f2faff;
+}
+
+.welcome p {
+    color: #b9d8f8;
+    font-size: 13px;
+    line-height: 1.7;
+    max-width: 500px;
+}
+
+/* ---- Section heading ---- */
+.section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.section-heading h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 17px;
+    color: #f0f8ff;
+}
+
+.section-heading span {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+/* ---- Stats cards ---- */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.075),
+        rgba(255, 255, 255, 0.02) 45%,
+        rgba(8, 16, 30, 0.55)
+    );
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 21px;
+    backdrop-filter: blur(24px) saturate(170%);
+    -webkit-backdrop-filter: blur(24px) saturate(170%);
+    box-shadow:
+        0 12px 30px -8px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.16),
+        inset 0 -2px 10px rgba(0, 0, 0, 0.25);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 15%;
+    right: 15%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(94, 234, 212, 0.6),
+        transparent
+    );
+    border-radius: 50%;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+        0 18px 40px -10px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(94, 234, 212, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        inset 0 -2px 10px rgba(0, 0, 0, 0.25);
+}
+
+.stat-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.stat-icon {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    font-size: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.blue   { color: #60a5fa; background: rgba(59, 130, 246, 0.16); }
+.green  { color: #4ade80; background: rgba(34, 197, 94, 0.14); }
+.yellow { color: #fbbf24; background: rgba(251, 191, 36, 0.14); }
+
+.stat-label {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.stat-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 30px;
+    font-weight: 700;
+    margin-top: 7px;
+    background: linear-gradient(120deg, #5eead4, #60a5fa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+/* ---- Glass panels (sections) ---- */
+.panel {
+    background: linear-gradient(
+        160deg,
+        rgba(255, 255, 255, 0.065),
+        rgba(255, 255, 255, 0.02) 45%,
+        rgba(8, 16, 30, 0.55)
+    );
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 26px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(28px) saturate(170%);
+    -webkit-backdrop-filter: blur(28px) saturate(170%);
+    box-shadow:
+        0 20px 50px -14px rgba(0, 0, 0, 0.65),
+        inset 0 1px 0 rgba(255, 255, 255, 0.16),
+        inset 0 -2px 12px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.panel::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 6%;
+    right: 6%;
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(94, 234, 212, 0.75),
+        rgba(255, 255, 255, 0.9),
+        transparent
+    );
+    border-radius: 50%;
+    filter: blur(0.5px);
+}
+
+.panel h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #f0f8ff;
+}
+
+/* ---- Form fields ---- */
+label.field-label {
+    display: block;
+    color: #c7d4e5;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: 0.2px;
+}
+
+select, input[type="date"] {
+    width: 100%;
+    padding: 13px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
+    margin-bottom: 16px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        inset 0 -2px 6px rgba(0, 0, 0, 0.25);
+    font-size: 14px;
+    color-scheme: dark;
+}
+
+select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%237d92b0' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+    cursor: pointer;
+}
+
+select option { background: #0a1220; color: var(--text); }
+
+select:focus, input[type="date"]:focus {
+    border-color: rgba(94, 234, 212, 0.7);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow:
+        0 0 0 3px rgba(94, 234, 212, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        inset 0 -2px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* ---- Booking grid ---- */
+.booking-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 18px;
+}
+
+.booking-grid .full-width { grid-column: span 2; }
+
+/* ---- Primary button ---- */
+.primary {
+    position: relative;
+    background: linear-gradient(135deg, #5eead4, #22d3ee 55%, #3b82f6);
+    color: #031118;
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.2px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow:
+        0 10px 32px rgba(34, 211, 238, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        inset 0 -3px 12px rgba(0, 0, 0, 0.22);
+    transition: transform 0.25s, box-shadow 0.25s;
+    overflow: hidden;
+    margin-top: 4px;
+}
+
+.primary::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        120deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.65) 50%,
+        transparent 70%
+    );
+    transform: translateX(-130%);
+    transition: transform 0.7s;
+}
+
+.primary:hover::after { transform: translateX(130%); }
+
+.primary:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 16px 44px rgba(34, 211, 238, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.85),
+        inset 0 -3px 12px rgba(0, 0, 0, 0.22);
+}
+
+.primary:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ---- Doctor info box ---- */
+.doc-info {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 13px 15px;
+    margin-bottom: 16px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.doc-info b { color: var(--text); }
+
+/* ================= LIVE TOKEN TRACKING ================= */
+.token-panel {
+    background: linear-gradient(
+        145deg,
+        rgba(14, 116, 144, 0.22),
+        rgba(30, 64, 175, 0.18) 55%,
+        rgba(34, 211, 238, 0.1)
+    );
+    border: 1px solid rgba(94, 234, 212, 0.28);
+    padding: 28px;
+}
+
+.token-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.token-header h3 {
+    color: #a8f0e4;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    font-weight: 700;
+}
+
+.current-token-big {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.current-token-big p {
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.current-token-big h1 {
+    font-size: 68px;
+    line-height: 1;
+    background: linear-gradient(135deg, #5eead4, #22d3ee 50%, #60a5fa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    filter: drop-shadow(0 0 36px rgba(34, 211, 238, 0.45));
+    letter-spacing: -2px;
+    margin-bottom: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: rgba(148, 163, 184, 0.15);
+    color: #94a3b8;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 15px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* ---- Timeline ---- */
+.timeline {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin-bottom: 32px;
+    padding: 0 10px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 22px;
+    left: 30px;
+    right: 30px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    z-index: 1;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.step {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    flex: 1;
+}
+
+.step-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.04);
+    border: 3px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px auto;
+    font-size: 18px;
+    color: #64748b;
+    transition: 0.3s;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.step-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.step.completed .step-icon {
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    border-color: rgba(74, 222, 128, 0.6);
+    color: #031118;
+    box-shadow: 0 0 18px rgba(74, 222, 128, 0.4);
+}
+
+.step.completed .step-title { color: #4ade80; }
+
+.step.active .step-icon {
+    background: linear-gradient(135deg, #22d3ee, #3b82f6);
+    border-color: rgba(94, 234, 212, 0.7);
+    color: #031118;
+    box-shadow: 0 0 22px rgba(34, 211, 238, 0.6);
+}
+
+.step.active .step-title { color: #5eead4; }
+
+/* ---- Token info boxes ---- */
+.token-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.info-box {
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid var(--border);
+    padding: 16px;
+    border-radius: 14px;
+    text-align: center;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.info-box p {
+    color: var(--muted);
+    font-size: 11px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 600;
+}
+
+.info-box h3 {
+    color: #f0f8ff;
+    font-size: 19px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    background: linear-gradient(120deg, #5eead4, #60a5fa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+#tokenDoctor {
+    font-size: 14px !important;
+    background: none !important;
+    -webkit-text-fill-color: #f0f8ff !important;
+    color: #f0f8ff !important;
+}
+
+/* ---- Table ---- */
+.table-scroll {
+    overflow-x: auto;
+    border-radius: 14px;
+    border: 1px solid var(--border-soft);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 500px;
+}
+
+th, td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-soft);
+    text-align: left;
+    font-size: 13px;
+}
+
+th {
+    color: #8298b4;
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    background: rgba(10, 18, 32, 0.5);
+}
+
+tbody tr:last-child td { border-bottom: none; }
+tbody tr { transition: background 0.2s; }
+tbody tr:hover { background: rgba(94, 234, 212, 0.05); }
+
+/* ---- Status pills ---- */
+.status {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-block;
+    border: 1px solid transparent;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.status.waiting {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.12);
+    border-color: rgba(251, 191, 36, 0.28);
+}
+
+.status.now_serving {
+    color: #22d3ee;
+    background: rgba(34, 211, 238, 0.14);
+    border-color: rgba(34, 211, 238, 0.32);
+    box-shadow: 0 0 18px rgba(34, 211, 238, 0.2);
+}
+
+.status.completed {
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.12);
+    border-color: rgba(74, 222, 128, 0.3);
+}
+
+.status.cancelled {
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.12);
+    border-color: rgba(248, 113, 113, 0.28);
+}
+
+/* ---- Messages ---- */
+.message {
+    color: var(--muted);
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    min-height: 18px;
+}
+
+.notice {
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    background: rgba(248, 113, 113, 0.1);
+    border: 1px solid rgba(248, 113, 113, 0.3);
+    color: #f87171;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.hidden { display: none; }
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1100px) {
+    .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .main { padding: 28px; }
+}
+
+@media (max-width: 900px) {
+    .booking-grid { grid-template-columns: 1fr; }
+    .booking-grid .full-width { grid-column: span 1; }
+}
+
+/* ---- MOBILE: hide sidebar, show topbar + horizontal nav ---- */
+@media (max-width: 760px) {
+    .sidebar {
+        display: none;
+    }
+
+    .mobile-topbar {
+        display: flex;
+    }
+
+    .mobile-nav {
+        display: flex;
+    }
+
+    .main {
+        margin-left: 0;
+        width: 100%;
+        padding: 20px 16px 40px;
+    }
+
+    #bookSection,
+    #trackingSection,
+    #appointmentsSection {
+        scroll-margin-top: 130px;
+    }
+
+    .topbar {
+        align-items: flex-start;
+        margin-bottom: 22px;
+    }
+
+    .page-title { font-size: 22px; }
+    .welcome { padding: 24px 22px; }
+    .welcome h2 { font-size: 21px; }
+    .stats { gap: 12px; }
+    .stat-card { padding: 16px; }
+    .stat-value { font-size: 25px; }
+    .stat-icon { width: 36px; height: 36px; font-size: 16px; }
+    .panel { padding: 20px 18px; border-radius: 18px; }
+    .token-panel { padding: 22px 18px; }
+    .current-token-big h1 { font-size: 52px; }
+
+    /* Vertical timeline on mobile */
+    .timeline {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+        padding: 0;
+    }
+
+    .timeline::before {
+        top: 22px;
+        bottom: 22px;
+        left: 22px;
+        width: 3px;
+        height: auto;
+        right: auto;
+    }
+
+    .step {
+        display: flex;
+        text-align: left;
+        align-items: center;
+        gap: 14px;
+        width: 100%;
+    }
+
+    .step-icon { margin: 0; flex-shrink: 0; }
+    .step-title { margin: 0; }
+
+    .token-info { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .info-box { padding: 13px 8px; }
+    .info-box h3 { font-size: 16px; }
+    #tokenDoctor { font-size: 12px !important; }
+    .info-box p { font-size: 9px; }
+}
+
+@media (max-width: 500px) {
+    .stats { grid-template-columns: 1fr; }
+    .current-token-big h1 { font-size: 46px; }
+    .token-info { grid-template-columns: 1fr 1fr; }
+    .token-info .info-box:last-child { grid-column: span 2; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+    html { scroll-behavior: auto; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+    <!-- SIDEBAR (desktop only) -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">✚</div>
+            <div class="logo-text">Medi<span>Queue</span></div>
+        </div>
+
+        <div class="nav-label">WORKSPACE</div>
+        <a href="#top" class="nav-item active" id="navDashboard">
+            <span class="nav-icon">▦</span><span class="nav-text">Dashboard</span>
+        </a>
+        <a href="#bookSection" class="nav-item" id="navBook">
+            <span class="nav-icon">✚</span><span class="nav-text">Book Token</span>
+        </a>
+        <a href="#trackingSection" class="nav-item" id="navTracking">
+            <span class="nav-icon">◷</span><span class="nav-text">Live Tracking</span>
+        </a>
+        <a href="#appointmentsSection" class="nav-item" id="navAppointments">
+            <span class="nav-icon">▤</span><span class="nav-text">My Appointments</span>
+        </a>
+
+        <div class="sidebar-bottom">
+            <div class="profile-card">
+                <div class="profile-row">
+                    <div class="avatar" id="avatar">P</div>
+                    <div class="profile-info">
+                        <div class="profile-name" id="patientName">Patient</div>
+                        <div class="profile-role">Patient Account</div>
+                    </div>
+                </div>
+            </div>
+            <button class="logout-btn" id="logoutBtn"><span>↪</span><span class="logout-text">Logout</span></button>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main" id="top">
+
+        <!-- MOBILE TOPBAR (hidden on desktop) -->
+        <div class="mobile-topbar">
+            <div class="mobile-logo">
+                <div class="logo-icon">✚</div>
+                MediQueue
+            </div>
+            <button class="mobile-logout" id="logoutBtnMobile">↪ Logout</button>
+        </div>
+
+        <!-- MOBILE HORIZONTAL NAV -->
+        <nav class="mobile-nav">
+            <a href="#top" class="active" id="mnavDashboard"><span>▦</span> Dashboard</a>
+            <a href="#bookSection" id="mnavBook"><span>✚</span> Book</a>
+            <a href="#trackingSection" id="mnavTracking"><span>◷</span> Tracking</a>
+            <a href="#appointmentsSection" id="mnavAppointments"><span>▤</span> Appointments</a>
+        </nav>
+
+        <header class="topbar">
+            <div>
+                <h1 class="page-title" id="welcome">Welcome Patient</h1>
+                <p class="page-subtitle">Book appointments and track your hospital token live.</p>
+            </div>
+            <div class="live-indicator" id="liveBadge">LIVE</div>
+        </header>
+
+        <!-- Welcome banner -->
+        <section class="welcome">
+            <h2>Hello, <span id="welcomeName">Patient</span> 👋</h2>
+            <p>Book a token with your preferred doctor, then track your live queue position in real time.</p>
+        </section>
+
+        <!-- Stats -->
+        <div class="section-heading">
+            <h3>Overview</h3>
+            <span>Your activity at a glance</span>
+        </div>
+
+        <section class="stats">
+            <div class="stat-card">
+                <div class="stat-top"><div class="stat-icon blue">▤</div></div>
+                <div class="stat-label">Total Appointments</div>
+                <div class="stat-value" id="totalAppointments">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top"><div class="stat-icon yellow">◷</div></div>
+                <div class="stat-label">Waiting Tokens</div>
+                <div class="stat-value" id="waitingAppointments">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top"><div class="stat-icon green">✓</div></div>
+                <div class="stat-label">Completed</div>
+                <div class="stat-value" id="completedAppointments">0</div>
+            </div>
+        </section>
+
+        <!-- Book Token -->
+        <section class="panel" id="bookSection">
+            <h2>Book Token</h2>
+            <div class="notice hidden" id="loadNotice"></div>
+
+            <div class="booking-grid">
+                <div>
+                    <label class="field-label" for="specialtySelect">Specialization</label>
+                    <select id="specialtySelect">
+                        <option value="">Loading specializations...</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="field-label" for="doctorSelect">Doctor</label>
+                    <select id="doctorSelect" disabled>
+                        <option value="">Select a specialization first</option>
+                    </select>
+                </div>
+
+                <div class="full-width">
+                    <div class="doc-info hidden" id="docInfo"></div>
+                </div>
+
+                <div class="full-width">
+                    <label class="field-label" for="appointmentDate">Date</label>
+                    <input type="date" id="appointmentDate">
+                </div>
+
+                <div class="full-width">
+                    <button class="primary" id="bookBtn">
+                        Book Appointment &amp; Get Token
+                    </button>
+                    <p class="message" id="bookingMessage"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Tracking -->
+        <section class="panel token-panel" id="trackingSection">
+            <div class="token-header">
+                <h3>Live Token Tracking</h3>
+            </div>
+
+            <div class="current-token-big">
+                <p>Your Token</p>
+                <h1 id="myToken">--</h1>
+                <div class="status-badge" id="tokenStatus">No active token</div>
+            </div>
+
+            <div class="timeline">
+                <div class="step" id="stepBooked">
+                    <div class="step-icon">✓</div>
+                    <div class="step-title">Booked</div>
+                </div>
+                <div class="step" id="stepWaiting">
+                    <div class="step-icon">◷</div>
+                    <div class="step-title">Waiting</div>
+                </div>
+                <div class="step" id="stepServing">
+                    <div class="step-icon">⚕</div>
+                    <div class="step-title">Your Turn</div>
+                </div>
+                <div class="step" id="stepDone">
+                    <div class="step-icon">★</div>
+                    <div class="step-title">Completed</div>
+                </div>
+            </div>
+
+            <div class="token-info">
+                <div class="info-box">
+                    <p>Currently Serving</p>
+                    <h3 id="currentToken">--</h3>
+                </div>
+                <div class="info-box">
+                    <p>People Ahead</p>
+                    <h3 id="peopleAhead">--</h3>
+                </div>
+                <div class="info-box">
+                    <p>Doctor</p>
+                    <h3 id="tokenDoctor">--</h3>
+                </div>
+            </div>
+        </section>
+
+        <!-- My Appointments -->
+        <section class="panel" id="appointmentsSection">
+            <h2>My Appointments</h2>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Doctor</th>
+                            <th>Date</th>
+                            <th>Your Token</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointmentTable">
+                        <tr><td colspan="4">Loading appointments...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script type="module">
+
+import { auth, db } from "./firebase-config.js";
+
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+import {
+  collection, doc, getDoc, getDocs, query, where,
+  onSnapshot, runTransaction, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+let currentUser = null;
+let profile = {};
+let appointments = [];
+let doctors = [];
+let activeAppointment = null;
+
+let appointmentUnsubscribe = null;
+let queueUnsubscribe = null;
+let aheadUnsubscribe = null;
+let started = false;
+
+let hasPlayedAlarm = false;
+
+const $ = id => document.getElementById(id);
+
+/* ---------- sidebar + mobile nav scroll-spy ---------- */
+(function initNav() {
+  const navMap = [
+    { desktop: "navDashboard",    mobile: "mnavDashboard",    section: null },
+    { desktop: "navBook",         mobile: "mnavBook",         section: "bookSection" },
+    { desktop: "navTracking",     mobile: "mnavTracking",     section: "trackingSection" },
+    { desktop: "navAppointments", mobile: "mnavAppointments", section: "appointmentsSection" }
+  ];
+
+  const navEls = navMap.map(n => ({
+    desktop: document.getElementById(n.desktop),
+    mobile: document.getElementById(n.mobile),
+    section: n.section ? document.getElementById(n.section) : null,
+    sectionId: n.section ? n.section : "top"
+  }));
+
+  function setActive(sectionId) {
+    navEls.forEach(item => {
+      const isActive = item.sectionId === sectionId;
+      if (item.desktop) item.desktop.classList.toggle("active", isActive);
+      if (item.mobile) item.mobile.classList.toggle("active", isActive);
+    });
+  }
+
+  navEls.forEach(item => {
+    if (item.desktop) {
+      item.desktop.addEventListener("click", () => setActive(item.sectionId));
+    }
+    if (item.mobile) {
+      item.mobile.addEventListener("click", () => setActive(item.sectionId));
+    }
+  });
+
+  const sections = navEls
+    .filter(n => n.section)
+    .map(n => ({ id: n.sectionId, el: n.section }));
+
+  function onScroll() {
+    const scrollY = window.scrollY || window.pageYOffset;
+
+    if (scrollY < 120) {
+      setActive("top");
+      return;
+    }
+
+    let current = "top";
+    const offset = 140;
+
+    for (const s of sections) {
+      const rect = s.el.getBoundingClientRect();
+      if (rect.top <= offset) {
+        current = s.id;
+      }
+    }
+
+    if (window.innerHeight + scrollY >= document.body.offsetHeight - 20) {
+      current = sections[sections.length - 1].id;
+    }
+
+    setActive(current);
+  }
+
+  let ticking = false;
+  window.addEventListener("scroll", () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        onScroll();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+
+  onScroll();
+})();
+
+/* ---------- helpers ---------- */
+function esc(v) {
+  return String(v ?? "").replace(/[&<>"']/g, c => (
+    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
+  ));
+}
+
+function str(v) {
+  return typeof v === "string" && v.trim() ? v.trim() : "";
+}
+
+function localDateKey(d = new Date()) {
+  return d.getFullYear() + "-" +
+    String(d.getMonth() + 1).padStart(2, "0") + "-" +
+    String(d.getDate()).padStart(2, "0");
+}
+
+$("appointmentDate").min = localDateKey();
+
+function showMessage(message, color = "#7d92b0") {
+  $("bookingMessage").textContent = message;
+  $("bookingMessage").style.color = color;
+}
+
+function showNotice(text) {
+  $("loadNotice").textContent = text;
+  $("loadNotice").classList.toggle("hidden", !text);
+}
+
+function explain(error) {
+  const code = String(error?.code || "");
+  if (code.includes("permission-denied"))
+    return "Firestore permission denied. Check your Firestore security rules.";
+  if (code.includes("unavailable") || code.includes("network"))
+    return "Network problem. Check your internet connection.";
+  return "Something went wrong (" + (code || error?.message || "unknown") + ").";
+}
+
+function tokenLabel(number) {
+  return "A-" + String(number).padStart(3, "0");
+}
+
+function getStatus(a) {
+  const v = String(a.status || a.appointmentStatus || "waiting").trim().toLowerCase();
+  if (v.includes("cancel") || v.includes("reject")) return "cancelled";
+  if (v.includes("complete") || v === "done") return "completed";
+  if (v === "now_serving" || v === "now serving" || v === "serving" || v === "in_progress") return "now_serving";
+  return "waiting";
+}
+
+const ACTIVE = ["waiting", "now_serving"];
+
+function getAppointmentDate(a) { return a.date || a.appointmentDate || ""; }
+function queueId(hospitalId, doctorId, date) { return `${hospitalId}_${doctorId}_${date}`; }
+
+const docName = d => str(d.name) || str(d.fullName) || str(d.doctorName) || "Doctor";
+const docSpec = d => str(d.specialization) || str(d.speciality) || str(d.specialty) || str(d.department) || "General";
+const docHospId = d => str(d.hospitalId) || str(d.hospitalUid);
+const docHospName = d => str(d.hospitalName) || str(d.hospital) || "Hospital";
+const docUnavailable = d => d.available === false || d.isAvailable === false || d.availability === false;
+
+/* ---------- Alarm ---------- */
+function playAlarm() {
+  if (hasPlayedAlarm) return;
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.setValueAtTime(1046.50, ctx.currentTime + 0.1);
+    osc.frequency.setValueAtTime(880, ctx.currentTime + 0.2);
+
+    gain.gain.setValueAtTime(0.5, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime + 0.5);
+    hasPlayedAlarm = true;
+  } catch (e) {
+    console.warn("Audio playback failed:", e);
+  }
+}
+
+/* ---------- authentication ---------- */
+onAuthStateChanged(auth, async user => {
+  if (!user) {
+    window.location.replace("login.html");
+    return;
+  }
+
+  if (started && currentUser && currentUser.uid === user.uid) return;
+  started = true;
+  currentUser = user;
+
+  try {
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    if (userDoc.exists()) {
+      profile = userDoc.data();
+      const role = String(profile.role || "").toLowerCase();
+      if (["hospital", "hospital_admin"].includes(role)) {
+        window.location.replace("hospital-dashboard.html");
+        return;
+      }
+    }
+  } catch (error) {
+    console.error("Profile error:", error);
+  }
+
+  const displayName = profile.name || user.displayName || "Patient";
+  $("welcome").textContent = "Welcome " + displayName;
+  $("welcomeName").textContent = displayName;
+  $("patientName").textContent = displayName;
+  const avatarEl = $("avatar");
+  if (avatarEl) avatarEl.textContent = displayName.charAt(0).toUpperCase();
+
+  loadDoctors();
+  listenAppointments();
+});
+
+/* ---------- doctors ---------- */
+async function loadDoctors() {
+  const specSelect = $("specialtySelect");
+  try {
+    const snapshot = await getDocs(collection(db, "doctors"));
+    doctors = snapshot.docs.map(d => ({ id: d.id, ...d.data() })).filter(d => !docUnavailable(d));
+
+    if (!doctors.length) {
+      specSelect.innerHTML = '<option value="">No doctors found</option>';
+      showNotice("No doctors exist in the database yet.");
+      return;
+    }
+
+    const specs = [...new Set(doctors.map(docSpec))].sort();
+    specSelect.innerHTML = '<option value="">Select specialization</option>' +
+      specs.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join("");
+  } catch (error) {
+    console.error("Doctors error:", error);
+    specSelect.innerHTML = '<option value="">Could not load doctors</option>';
+  }
+}
+
+$("specialtySelect").addEventListener("change", () => {
+  const spec = $("specialtySelect").value;
+  const select = $("doctorSelect");
+  $("docInfo").classList.add("hidden");
+
+  if (!spec) {
+    select.disabled = true;
+    select.innerHTML = '<option value="">Select a specialization first</option>';
+    return;
+  }
+
+  const list = doctors.filter(d => docSpec(d) === spec).sort((a, b) => docName(a).localeCompare(docName(b)));
+  select.disabled = false;
+  select.innerHTML = '<option value="">Select doctor</option>' +
+    list.map(d => `<option value="${esc(d.id)}">${esc(docName(d))} - ${esc(docHospName(d))}</option>`).join("");
+});
+
+$("doctorSelect").addEventListener("change", () => {
+  const d = doctors.find(x => x.id === $("doctorSelect").value);
+  const box = $("docInfo");
+  box.classList.toggle("hidden", !d);
+  if (d) {
+    box.innerHTML = `<b>${esc(docName(d))}</b><br>Specialization: ${esc(docSpec(d))}<br>Hospital: ${esc(docHospName(d))}`;
+  }
+});
+
+/* ---------- my appointments ---------- */
+function listenAppointments() {
+  if (appointmentUnsubscribe) appointmentUnsubscribe();
+
+  const q = query(collection(db, "appointments"), where("patientId", "==", currentUser.uid));
+
+  appointmentUnsubscribe = onSnapshot(q, snapshot => {
+    appointments = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderAppointments();
+
+    const today = localDateKey();
+    const active = appointments
+      .filter(a => ACTIVE.includes(getStatus(a)) && String(getAppointmentDate(a)) >= today)
+      .sort((a, b) => Number(a.tokenNumber) - Number(b.tokenNumber));
+
+    activeAppointment = active[0] || null;
+    listenToken();
+  }, error => {
+    console.error("Appointments error:", error);
+    $("appointmentTable").innerHTML = `<tr><td colspan="4">Could not load appointments. ${esc(explain(error))}</td></tr>`;
+  });
+}
+
+function renderAppointments() {
+  $("totalAppointments").textContent = appointments.length;
+  $("waitingAppointments").textContent = appointments.filter(a => ACTIVE.includes(getStatus(a))).length;
+  $("completedAppointments").textContent = appointments.filter(a => getStatus(a) === "completed").length;
+
+  const tbody = $("appointmentTable");
+  if (!appointments.length) {
+    tbody.innerHTML = '<tr><td colspan="4">No appointments found</td></tr>';
+    return;
+  }
+
+  const sorted = [...appointments].sort((a, b) => String(getAppointmentDate(b)).localeCompare(String(getAppointmentDate(a))));
+
+  tbody.innerHTML = sorted.map(a => {
+    const token = a.tokenLabel || (a.tokenNumber ? tokenLabel(a.tokenNumber) : "--");
+    const st = getStatus(a);
+    const statusLabel = { waiting: "Waiting", now_serving: "Your Turn", completed: "Completed", cancelled: "Cancelled" }[st];
+
+    return `<tr>
+      <td>${esc(a.doctorName || "--")}</td>
+      <td>${esc(getAppointmentDate(a) || "--")}</td>
+      <td><strong style="color:#5eead4">${esc(token)}</strong></td>
+      <td><span class="status ${st}">${statusLabel}</span></td>
+    </tr>`;
+  }).join("");
+}
+
+/* ---------- LIVE TOKEN TRACKING ---------- */
+function listenToken() {
+  if (queueUnsubscribe) { queueUnsubscribe(); queueUnsubscribe = null; }
+  if (aheadUnsubscribe) { aheadUnsubscribe(); aheadUnsubscribe = null; }
+
+  if (!activeAppointment) {
+    $("myToken").textContent = "--";
+    $("currentToken").textContent = "--";
+    $("peopleAhead").textContent = "--";
+    $("tokenDoctor").textContent = "--";
+    $("tokenStatus").textContent = "No active token";
+    $("tokenStatus").style.background = "rgba(148, 163, 184, 0.15)";
+    $("tokenStatus").style.color = "#94a3b8";
+    $("tokenStatus").style.borderColor = "rgba(148, 163, 184, 0.3)";
+    $("liveBadge").style.display = "none";
+
+    ["stepBooked", "stepWaiting", "stepServing", "stepDone"].forEach(id => {
+      $(id).className = "step";
+    });
+    hasPlayedAlarm = false;
+    return;
+  }
+
+  const appointment = activeAppointment;
+  const number = Number(appointment.tokenNumber || 0);
+  const st = getStatus(appointment);
+
+  $("myToken").textContent = appointment.tokenLabel || (number ? tokenLabel(number) : "--");
+  $("tokenDoctor").textContent = appointment.doctorName || "--";
+  $("liveBadge").style.display = "inline-flex";
+
+  function updateTimeline(stage) {
+    const steps = ["stepBooked", "stepWaiting", "stepServing", "stepDone"];
+    steps.forEach(id => $(id).className = "step");
+
+    $("stepBooked").classList.add("completed");
+
+    if (stage === "completed") {
+      $("stepWaiting").classList.add("completed");
+      $("stepServing").classList.add("completed");
+      $("stepDone").classList.add("completed");
+    } else if (stage === "serving") {
+      $("stepWaiting").classList.add("completed");
+      $("stepServing").classList.add("active");
+    } else {
+      $("stepWaiting").classList.add("active");
+    }
+  }
+
+  if (st === "completed") {
+    updateTimeline("completed");
+    $("tokenStatus").textContent = "Consultation Completed";
+    $("tokenStatus").style.background = "rgba(74, 222, 128, 0.15)";
+    $("tokenStatus").style.color = "#4ade80";
+    $("tokenStatus").style.borderColor = "rgba(74, 222, 128, 0.3)";
+    $("liveBadge").style.display = "none";
+    return;
+  }
+
+  updateTimeline("waiting");
+  $("tokenStatus").textContent = "Waiting for your turn...";
+  $("tokenStatus").style.background = "rgba(251, 191, 36, 0.15)";
+  $("tokenStatus").style.color = "#fbbf24";
+  $("tokenStatus").style.borderColor = "rgba(251, 191, 36, 0.3)";
+
+  const hospitalId = appointment.hospitalId;
+  const doctorId = appointment.doctorId;
+  const date = getAppointmentDate(appointment);
+
+  if (!hospitalId || !doctorId || !date || !number) {
+    $("currentToken").textContent = "--";
+    $("peopleAhead").textContent = "--";
+    return;
+  }
+
+  queueUnsubscribe = onSnapshot(
+    doc(db, "hospitalQueues", queueId(hospitalId, doctorId, date)),
+    queueSnapshot => {
+      const queue = queueSnapshot.exists() ? queueSnapshot.data() : {};
+      const currentServingNum = Number(queue.currentToken || 0);
+
+      $("currentToken").textContent = currentServingNum ? tokenLabel(currentServingNum) : "--";
+
+      if (currentServingNum === number) {
+        updateTimeline("serving");
+        $("tokenStatus").textContent = "It's your turn! Go to the doctor.";
+        $("tokenStatus").style.background = "rgba(34, 211, 238, 0.15)";
+        $("tokenStatus").style.color = "#22d3ee";
+        $("tokenStatus").style.borderColor = "rgba(34, 211, 238, 0.3)";
+        playAlarm();
+      } else if (currentServingNum > number && st !== "completed") {
+        updateTimeline("waiting");
+        $("tokenStatus").textContent = "Waiting for your turn...";
+        $("tokenStatus").style.background = "rgba(251, 191, 36, 0.15)";
+        $("tokenStatus").style.color = "#fbbf24";
+        $("tokenStatus").style.borderColor = "rgba(251, 191, 36, 0.3)";
+      } else {
+        updateTimeline("waiting");
+        $("tokenStatus").textContent = "Waiting for your turn...";
+        $("tokenStatus").style.background = "rgba(251, 191, 36, 0.15)";
+        $("tokenStatus").style.color = "#fbbf24";
+        $("tokenStatus").style.borderColor = "rgba(251, 191, 36, 0.3)";
+      }
+    },
+    error => console.error("Queue error:", error)
+  );
+
+  const aheadQuery = query(
+    collection(db, "appointments"),
+    where("hospitalId", "==", hospitalId),
+    where("doctorId", "==", doctorId),
+    where("date", "==", date)
+  );
+
+  aheadUnsubscribe = onSnapshot(aheadQuery, snapshot => {
+    const allTodayAppts = snapshot.docs.map(d => d.data());
+
+    const ahead = allTodayAppts.filter(a => {
+      const aToken = Number(a.tokenNumber);
+      const aStatus = getStatus(a);
+      return aToken < number && (aStatus === "waiting" || aStatus === "now_serving");
+    });
+
+    $("peopleAhead").textContent = ahead.length;
+  }, error => {
+    console.error("People-ahead error:", error);
+    $("peopleAhead").textContent = "--";
+  });
+}
+
+/* ---------- booking ---------- */
+$("bookBtn").addEventListener("click", async () => {
+  if (!currentUser) return;
+
+  const doctorId = $("doctorSelect").value;
+  const date = $("appointmentDate").value;
+
+  if (!$("specialtySelect").value) return showMessage("Select a specialization.", "#f87171");
+  if (!doctorId || !date) return showMessage("Select doctor and date.", "#f87171");
+
+  const doctor = doctors.find(d => d.id === doctorId);
+  if (!doctor) return showMessage("Doctor not found.", "#f87171");
+
+  const hospitalId = docHospId(doctor);
+  if (!hospitalId) return showMessage("This doctor is not linked to a hospital.", "#f87171");
+
+  const duplicate = appointments.some(a =>
+    a.doctorId === doctorId &&
+    getAppointmentDate(a) === date &&
+    ACTIVE.includes(getStatus(a))
+  );
+
+  if (duplicate) {
+    return showMessage("You already have an active appointment with this doctor on that date.", "#f87171");
+  }
+
+  $("bookBtn").disabled = true;
+  showMessage("Booking token...");
+
+  try {
+    const appointmentRef = doc(collection(db, "appointments"));
+    const queueRef = doc(db, "hospitalQueues", queueId(hospitalId, doctorId, date));
+    let booked = "";
+
+    await runTransaction(db, async transaction => {
+      const queueSnapshot = await transaction.get(queueRef);
+      const queue = queueSnapshot.exists() ? queueSnapshot.data() : { lastToken: 0, currentToken: 0 };
+      const nextToken = Number(queue.lastToken || 0) + 1;
+
+      transaction.set(queueRef, {
+        hospitalId, doctorId, date,
+        lastToken: nextToken,
+        currentToken: Number(queue.currentToken || 0),
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+
+      transaction.set(appointmentRef, {
+        patientId: currentUser.uid,
+        patientName: profile.name || currentUser.displayName || "Patient",
+        patientEmail: currentUser.email || "",
+        hospitalId,
+        hospitalName: docHospName(doctor),
+        doctorId,
+        doctorName: docName(doctor),
+        specialization: docSpec(doctor),
+        date,
+        tokenNumber: nextToken,
+        tokenLabel: tokenLabel(nextToken),
+        status: "waiting",
+        createdAt: serverTimestamp()
+      });
+
+      booked = tokenLabel(nextToken);
+    });
+
+    showMessage("Token booked successfully! Your token is " + booked, "#4ade80");
+  } catch (error) {
+    console.error("Booking error:", error);
+    showMessage("Booking failed. " + explain(error), "#f87171");
+  } finally {
+    $("bookBtn").disabled = false;
+  }
+});
+
+/* ---------- logout ---------- */
+async function doLogout() {
+  if (appointmentUnsubscribe) appointmentUnsubscribe();
+  if (queueUnsubscribe) queueUnsubscribe();
+  if (aheadUnsubscribe) aheadUnsubscribe();
+  await signOut(auth);
+  window.location.replace("login.html");
+}
+
+$("logoutBtn").addEventListener("click", doLogout);
+$("logoutBtnMobile").addEventListener("click", doLogout);
+
+</script>
+
+</body>
+</html>
